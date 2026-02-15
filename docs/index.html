@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Prompts IA</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        .header {
+            text-align: center; color: white; margin-bottom: 30px; padding: 20px;
+            background: rgba(255, 255, 255, 0.1); border-radius: 15px; backdrop-filter: blur(10px);
+        }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header p { font-size: 1.1em; opacity: 0.9; }
+
+        .digen-link {
+            display: inline-block; margin-top: 12px; padding: 10px 24px;
+            background: rgba(255, 255, 255, 0.2); color: white; text-decoration: none;
+            border-radius: 8px; font-weight: 600; font-size: 1em;
+            transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.3);
+        }
+        .digen-link:hover {
+            background: rgba(255, 255, 255, 0.35); transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .main-content { display: grid; grid-template-columns: 350px 1fr; gap: 20px; }
+
+        .panel {
+            background: white; border-radius: 15px; padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .control-panel h2 { color: #667eea; margin-bottom: 20px; font-size: 1.5em; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; }
+
+        .toggle-group { display: flex; gap: 10px; margin-bottom: 15px; }
+        .toggle-btn {
+            flex: 1; padding: 12px 20px; border: 2px solid #667eea; background: white;
+            color: #667eea; border-radius: 8px; cursor: pointer; font-size: 1em;
+            font-weight: 600; transition: all 0.3s ease;
+        }
+        .toggle-btn:hover { background: #f0f0f0; }
+        .toggle-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; border-color: #764ba2;
+        }
+
+        select {
+            width: 100%; padding: 12px; border: 2px solid #ddd;
+            border-radius: 8px; font-size: 1em; transition: border-color 0.3s ease;
+        }
+        select:focus { outline: none; border-color: #667eea; }
+
+        #explicitnessLevel {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 2px solid #667eea; font-weight: 600; cursor: pointer;
+        }
+        #explicitnessLevel:hover { border-color: #764ba2; }
+
+        .generate-btn {
+            width: 100%; padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; border: none; border-radius: 10px;
+            font-size: 1.2em; font-weight: 600; cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease; margin-top: 10px;
+        }
+        .generate-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4); }
+        .generate-btn:active { transform: translateY(0); }
+        .generate-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .result-panel h2 {
+            color: #667eea; margin-bottom: 15px; display: flex;
+            justify-content: flex-start; align-items: center; gap: 15px;
+        }
+
+        .copy-btn {
+            padding: 8px 16px; background: #10b981; color: white; border: none;
+            border-radius: 6px; cursor: pointer; font-size: 0.9em;
+            font-weight: 600; transition: background 0.3s ease;
+        }
+        .copy-btn:hover { background: #059669; }
+        .copy-btn.copied { background: #3b82f6; }
+
+        .prompt-display {
+            background: #f8f9fa; border: 2px solid #e9ecef; border-radius: 10px;
+            padding: 20px; min-height: 400px; font-family: 'Courier New', monospace;
+            font-size: 0.95em; line-height: 1.6; white-space: pre-wrap;
+            word-wrap: break-word; overflow-y: auto; max-height: 600px;
+        }
+        .prompt-display.empty {
+            display: flex; align-items: center; justify-content: center;
+            color: #adb5bd; font-family: 'Segoe UI', sans-serif; font-size: 1.1em;
+        }
+
+        .loading { text-align: center; color: #667eea; font-size: 1.2em; padding: 20px; }
+        .spinner {
+            display: inline-block; width: 20px; height: 20px;
+            border: 3px solid rgba(102, 126, 234, 0.3); border-radius: 50%;
+            border-top-color: #667eea; animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .batch-controls { display: flex; gap: 10px; align-items: center; margin-bottom: 15px; }
+        .batch-controls input {
+            flex: 1; padding: 12px; border: 2px solid #ddd;
+            border-radius: 8px; font-size: 1em;
+        }
+        .batch-controls input:focus { outline: none; border-color: #667eea; }
+
+        .info-text { font-size: 0.9em; color: #6c757d; margin-top: 5px; }
+
+        .advanced-options { animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        details summary { font-weight: 600; user-select: none; }
+        details summary:hover { background: #e9ecef !important; }
+
+        @media (max-width: 968px) { .main-content { grid-template-columns: 1fr; } }
+
+        .prompt-section {
+            margin-bottom: 20px; padding: 15px; background: white;
+            border-radius: 8px; border-left: 4px solid #667eea; position: relative;
+        }
+
+        .prompt-summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; padding: 12px 16px; border-radius: 6px;
+            margin-bottom: 15px; font-size: 0.95em; font-weight: 600;
+            text-align: center; box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .prompt-section h3 {
+            color: #667eea; margin-bottom: 10px; font-size: 1em;
+            display: flex; justify-content: flex-start; align-items: center; gap: 10px;
+        }
+        .prompt-section .prompt-text {
+            color: #495057; line-height: 1.5; margin-top: 10px;
+            word-wrap: break-word; overflow-wrap: break-word; white-space: pre-wrap;
+        }
+
+        .copy-individual-btn {
+            padding: 6px 12px; background: #10b981; color: white; border: none;
+            border-radius: 5px; cursor: pointer; font-size: 0.85em;
+            font-weight: 600; transition: all 0.3s ease;
+        }
+        .copy-individual-btn:hover { background: #059669; transform: translateY(-1px); }
+        .copy-individual-btn.copied { background: #3b82f6; }
+
+        .prompt-buttons { display: flex; gap: 6px; flex-wrap: wrap; }
+        .token-count { font-size: 0.75em; color: #6b7280; margin-top: 4px; }
+
+        .history-panel {
+            margin-top: 15px; padding: 10px; background: #f0f4ff;
+            border-radius: 8px; border: 1px solid #c7d2fe;
+        }
+        .history-panel h3 { color: #667eea; font-size: 0.95em; margin-bottom: 8px; }
+
+        .history-item {
+            padding: 6px 10px; background: white; border-radius: 5px;
+            margin-bottom: 5px; font-size: 0.8em; color: #374151;
+            cursor: pointer; transition: background 0.2s; display: flex;
+            justify-content: space-between; align-items: center; gap: 8px;
+        }
+        .history-item:hover { background: #e0e7ff; }
+        .history-item .hist-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+        .history-item .hist-actions { display: flex; gap: 4px; flex-shrink: 0; }
+
+        .hist-btn {
+            padding: 2px 6px; border: none; border-radius: 3px;
+            cursor: pointer; font-size: 0.85em; transition: all 0.2s;
+        }
+        .hist-copy { background: #10b981; color: white; }
+        .hist-del { background: #ef4444; color: white; }
+        .hist-btn:hover { opacity: 0.8; }
+
+        .clear-history-btn {
+            padding: 4px 10px; background: #ef4444; color: white;
+            border: none; border-radius: 4px; cursor: pointer; font-size: 0.8em; margin-top: 5px;
+        }
+
+        .shortcut-hint { font-size: 0.75em; color: #9ca3af; text-align: center; margin-top: 8px; }
+
+        .prompt-json {
+            background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px;
+            padding: 10px; margin-top: 10px; font-family: 'Courier New', monospace;
+            font-size: 0.85em; max-height: 200px; overflow-y: auto;
+            word-wrap: break-word; overflow-wrap: break-word; white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 Generador de Prompts IA</h1>
+            <p>Crea prompts profesionales para SDXL con un solo click</p>
+            <a href="https://digen.ai/image" target="_blank" class="digen-link">
+                🚀 Abrir DiGen.ai para generar imágenes
+            </a>
+        </div>
+
+        <div class="main-content">
+            <!-- Panel de Control -->
+            <div class="panel control-panel">
+                <h2>⚙️ Configuración</h2>
+
+                <div class="form-group">
+                    <label>🔞 Nivel de Explicitez</label>
+                    <select id="explicitnessLevel" onchange="updateLevelOptions()" style="margin-bottom: 10px;">
+                        <option value="0">🔧 Modo Personalizado (Clásico)</option>
+                        <option value="1">😊 Nivel 1 - Casual/Inocente</option>
+                        <option value="2">😏 Nivel 2 - Sugerente</option>
+                        <option value="3">😈 Nivel 3 - Provocativo</option>
+                        <option value="4">🔥 Nivel 4 - Sensual</option>
+                        <option value="5">💋 Nivel 5 - Explícito</option>
+                    </select>
+                    <p class="info-text" id="levelDescription">Usa controles personalizados abajo</p>
+                </div>
+
+                <div id="classicControls">
+                    <div class="form-group">
+                        <label>Tipo de Imagen</label>
+                        <div class="toggle-group">
+                            <button class="toggle-btn active" data-type="clothed" onclick="toggleType('clothed')">Con Ropa</button>
+                            <button class="toggle-btn" data-type="nude" onclick="toggleType('nude')">Sin Ropa</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="wetGroup" style="display: none;">
+                        <label>Condición</label>
+                        <div class="toggle-group">
+                            <button class="toggle-btn" data-wet="false" onclick="toggleWet(false)">Seca</button>
+                            <button class="toggle-btn" data-wet="true" onclick="toggleWet(true)">Mojada</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="clothingGroup" style="display: none;">
+                        <label>Cobertura</label>
+                        <select id="clothingSelect">
+                            <option value="random">🎲 Aleatorio</option>
+                            <option value="towel">Toalla</option>
+                            <option value="towel_barely">Toalla Pequeña</option>
+                            <option value="bedsheet">Sábana</option>
+                            <option value="bedsheet_revealing">Sábana Parcial</option>
+                            <option value="lingerie">Lencería</option>
+                            <option value="lingerie_sheer">Lencería Transparente</option>
+                            <option value="lingerie_lace">Lencería Encaje</option>
+                            <option value="bikini">Bikini</option>
+                            <option value="bikini_micro">Micro Bikini</option>
+                            <option value="underwear">Ropa Interior</option>
+                            <option value="underwear_tiny">Tanga Diminuta</option>
+                            <option value="bra_panties">Sostén y Bragas</option>
+                            <option value="nightgown">Camisón</option>
+                            <option value="nightgown_transparent">Camisón Transparente</option>
+                            <option value="robe">Bata Abierta</option>
+                            <option value="robe_revealing">Bata Suelta</option>
+                            <option value="silk_robe">Bata de Seda</option>
+                            <option value="mesh_lingerie">Lencería de Malla</option>
+                            <option value="harness_lingerie">Lencería de Arnés</option>
+                            <option value="stockings_garter">Medias y Liga</option>
+                            <option value="corset">Corsé</option>
+                            <option value="bodysuit_sheer">Body Transparente</option>
+                            <option value="body_paint">Pintura Corporal</option>
+                            <option value="jewelry_only">Solo Joyas</option>
+                            <option value="none_nude">Desnuda</option>
+                        </select>
+                    </div>
+                </div><!-- Fin classicControls -->
+
+                <div class="form-group">
+                    <label>Opciones Avanzadas</label>
+                    <details id="advancedDetails" style="cursor: pointer;">
+                        <summary style="padding: 10px; background: #f8f9fa; border-radius: 5px; margin-bottom: 10px;">
+                            ⚙️ Ajustes opcionales (Expresión, Ángulo, Lugar...)
+                        </summary>
+                        <div class="advanced-options" style="padding: 10px; background: #f8f9fa; border-radius: 5px; margin-top: 10px;">
+                            <label style="font-size: 0.9em; margin-bottom: 5px;">Expresión</label>
+                            <select id="facialExpression" style="margin-bottom: 15px; font-size: 0.9em;">
+                                <option value="random">🎲 Aleatorio</option>
+                                <option value="seductive_gaze">Seductora</option>
+                                <option value="lustful_eyes">Lujuriosa</option>
+                                <option value="playful_smile">Juguetona</option>
+                                <option value="biting_lip">Mordiendo Labio</option>
+                                <option value="mouth_open">Boca Abierta</option>
+                                <option value="intense_contact">Intensa</option>
+                                <option value="bedroom_eyes">Dormitorio</option>
+                            </select>
+
+                            <label style="font-size: 0.9em; margin-bottom: 5px;">Ángulo</label>
+                            <select id="cameraAngle" style="margin-bottom: 15px; font-size: 0.9em;">
+                                <option value="random">🎲 Aleatorio</option>
+                                <option value="eye_level">Normal</option>
+                                <option value="low_angle">Bajo</option>
+                                <option value="high_angle">Alto</option>
+                                <option value="over_shoulder">Sobre Hombro</option>
+                                <option value="from_behind">Desde Atrás</option>
+                                <option value="side_profile">Perfil</option>
+                                <option value="close_up">Primer Plano</option>
+                                <option value="full_body">Cuerpo Completo</option>
+                            </select>
+
+                            <label style="font-size: 0.9em; margin-bottom: 5px;">Escenario</label>
+                            <select id="scenario" style="margin-bottom: 15px; font-size: 0.9em;">
+                                <option value="random">🎲 Aleatorio</option>
+                                <option value="morning_after">Mañana Después</option>
+                                <option value="getting_ready">Preparándose</option>
+                                <option value="after_shower">Después Ducha</option>
+                                <option value="photoshoot">Sesión Privada</option>
+                                <option value="boudoir">Boudoir</option>
+                                <option value="intimate_selfie">Selfie</option>
+                                <option value="getting_undressed">Desvistiéndose</option>
+                            </select>
+
+                            <label style="font-size: 0.9em; margin-bottom: 5px;">Lugar</label>
+                            <select id="location" style="margin-bottom: 10px; font-size: 0.9em;">
+                                <option value="random">🎲 Aleatorio</option>
+                                <option value="bedroom">Habitación</option>
+                                <option value="bathroom">Baño</option>
+                                <option value="luxury_bedroom">Habitación Luxury</option>
+                                <option value="hotel_room">Hotel</option>
+                                <option value="jacuzzi">Jacuzzi</option>
+                                <option value="sauna">Sauna</option>
+                                <option value="poolside">Piscina</option>
+                                <option value="beach_cabana">Cabana Playa</option>
+                                <option value="yacht">Yate</option>
+                                <option value="villa">Villa</option>
+                                <option value="rooftop">Terraza</option>
+                                <option value="spa">Spa</option>
+                                <option value="resort">Resort</option>
+                                <option value="beach_house">Casa Playa</option>
+                            </select>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="form-group">
+                    <label>Cantidad de Prompts</label>
+                    <div class="batch-controls">
+                        <input type="number" id="batchCount" min="1" max="50" value="1" placeholder="1-50">
+                    </div>
+                    <p class="info-text">Genera entre 1 y 50 prompts</p>
+                </div>
+
+                <button class="generate-btn" onclick="generatePrompts()">✨ Generar Prompts</button>
+                <p class="shortcut-hint">⌨️ Ctrl+Enter para generar</p>
+            </div>
+
+            <!-- Panel de Resultados -->
+            <div class="panel result-panel">
+                <h2>
+                    📋 Resultado
+                    <button class="copy-btn" id="copyBtn" onclick="copyToClipboard()" style="display: none;">📋 Copiar Todos</button>
+                </h2>
+                <div class="prompt-display empty" id="promptDisplay">
+                    👈 Configura las opciones y genera tu prompt
+                </div>
+
+                <!-- Historial -->
+                <div class="history-panel" id="historyPanel" style="display: none;">
+                    <h3>📚 Historial <button class="clear-history-btn" onclick="clearHistory()">🗑️ Limpiar</button></h3>
+                    <div id="historyList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/prompt-generator.js"></script>
+    <script>
+        const generator = new PromptGenerator();
+
+        let currentConfig = {
+            clothed: true,
+            wet: false,
+            clothing: 'towel',
+            facialExpression: 'random',
+            cameraAngle: 'random',
+            scenario: 'random',
+            location: 'random'
+        };
+
+        // --- Historial ---
+        function getHistory() {
+            try { return JSON.parse(localStorage.getItem('promptHistory') || '[]'); }
+            catch { return []; }
+        }
+
+        function saveToHistory(prompt) {
+            const history = getHistory();
+            const entry = {
+                positive: prompt.positive_prompt,
+                timestamp: new Date().toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'}),
+                full: prompt
+            };
+            history.unshift(entry);
+            if (history.length > 20) history.pop();
+            localStorage.setItem('promptHistory', JSON.stringify(history));
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const history = getHistory();
+            const panel = document.getElementById('historyPanel');
+            const list = document.getElementById('historyList');
+
+            if (history.length === 0) { panel.style.display = 'none'; return; }
+
+            panel.style.display = 'block';
+            list.innerHTML = history.map((item, i) => {
+                const summary = item.full ? generatePromptSummary(item.full) : '';
+                const displayText = summary || item.positive.substring(0, 60) + '...';
+                return `
+                    <div class="history-item">
+                        <span class="hist-text" title="${item.positive}">${item.timestamp} - ${displayText}</span>
+                        <span class="hist-actions">
+                            <button class="hist-btn hist-copy" onclick="copyHistoryPositive(${i})" title="Copiar Positive">📋</button>
+                            <button class="hist-btn hist-del" onclick="deleteHistoryItem(${i})" title="Eliminar">✕</button>
+                        </span>
+                    </div>`;
+            }).join('');
+        }
+
+        function copyHistoryPositive(index) {
+            const history = getHistory();
+            if (history[index]) navigator.clipboard.writeText(history[index].positive);
+        }
+
+        function deleteHistoryItem(index) {
+            const history = getHistory();
+            history.splice(index, 1);
+            localStorage.setItem('promptHistory', JSON.stringify(history));
+            renderHistory();
+        }
+
+        function clearHistory() {
+            localStorage.removeItem('promptHistory');
+            renderHistory();
+        }
+
+        // --- Nivel de explicitez ---
+        function updateLevelOptions() {
+            const level = parseInt(document.getElementById('explicitnessLevel').value);
+            const classicControls = document.getElementById('classicControls');
+            const levelDesc = document.getElementById('levelDescription');
+
+            const descriptions = {
+                0: 'Usa controles personalizados abajo',
+                1: '😊 Casual - Ropa completa, cotidiano',
+                2: '😏 Sugerente - Ropa ajustada, coqueta',
+                3: '😈 Provocativo - Lencería, bikini',
+                4: '🔥 Sensual - Desnudez parcial',
+                5: '💋 Explícito - Total, poses sexuales'
+            };
+            levelDesc.textContent = descriptions[level] || descriptions[0];
+            classicControls.style.display = level === 0 ? 'block' : 'none';
+        }
+
+        function toggleType(type) {
+            currentConfig.clothed = (type === 'clothed');
+            document.querySelectorAll('[data-type]').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-type="${type}"]`).classList.add('active');
+
+            const wetGroup = document.getElementById('wetGroup');
+            const clothingGroup = document.getElementById('clothingGroup');
+            if (type === 'nude') {
+                wetGroup.style.display = 'block';
+                clothingGroup.style.display = 'block';
+            } else {
+                wetGroup.style.display = 'none';
+                clothingGroup.style.display = 'none';
+            }
+        }
+
+        function toggleWet(isWet) {
+            currentConfig.wet = isWet;
+            document.querySelectorAll('[data-wet]').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-wet="${isWet}"]`).classList.add('active');
+        }
+
+        // --- Keyboard shortcut ---
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') { e.preventDefault(); generatePrompts(); }
+        });
+
+        function generatePrompts() {
+            const batchCount = parseInt(document.getElementById('batchCount').value);
+            const promptDisplay = document.getElementById('promptDisplay');
+            const copyBtn = document.getElementById('copyBtn');
+            const generateBtn = document.querySelector('.generate-btn');
+
+            if (batchCount < 1 || batchCount > 50) {
+                alert('Por favor, ingresa un número entre 1 y 50');
+                return;
+            }
+
+            promptDisplay.classList.remove('empty');
+            generateBtn.disabled = true;
+
+            const explicitnessLevel = parseInt(document.getElementById('explicitnessLevel').value);
+
+            const config = {
+                explicitness_level: explicitnessLevel,
+                clothed: currentConfig.clothed,
+                wet: currentConfig.wet,
+                custom_options: {
+                    clothing: !currentConfig.clothed ? (document.getElementById('clothingSelect').value === 'random' ? null : document.getElementById('clothingSelect').value) : null,
+                    facial_expression: document.getElementById('facialExpression').value,
+                    camera_angle: document.getElementById('cameraAngle').value,
+                    scenario: document.getElementById('scenario').value,
+                    location: document.getElementById('location').value
+                }
+            };
+
+            try {
+                let prompts = [];
+                for (let i = 0; i < batchCount; i++) {
+                    prompts.push(generator.generatePrompt(config));
+                }
+
+                displayPrompts(prompts);
+                copyBtn.style.display = 'block';
+                copyBtn.textContent = batchCount > 1 ? `📋 Copiar Todos (${batchCount})` : '📋 Copiar';
+
+                prompts.forEach(p => saveToHistory(p));
+            } catch (error) {
+                promptDisplay.innerHTML = `<div style="color: #dc3545; padding: 20px;">❌ Error: ${error.message}</div>`;
+            } finally {
+                generateBtn.disabled = false;
+            }
+        }
+
+        function estimateTokens(text) {
+            return Math.round(text.split(/[\s,]+/).filter(w => w).length * 1.3);
+        }
+
+        function generatePromptSummary(prompt) {
+            if (!prompt || !prompt.positive_prompt) return '';
+            const text = prompt.positive_prompt.toLowerCase();
+            const parts = [];
+
+            const poses = {
+                'doggy style': 'a cuatro patas', 'on all fours': 'a cuatro patas',
+                'hands and knees': 'de rodillas', 'lying on bed': 'tumbada en cama',
+                'laying on back': 'tumbada boca arriba', 'sitting pose': 'sentada',
+                'standing pose': 'de pie', 'kneeling': 'arrodillada',
+                'bent over': 'inclinada', 'arched back': 'espalda arqueada',
+                'legs spread': 'piernas abiertas', 'provocative pose': 'pose provocativa',
+                'seductive pose': 'pose seductora', 'intimate pose': 'pose íntima'
+            };
+            for (const [en, es] of Object.entries(poses)) {
+                if (text.includes(en)) { parts.push(es); break; }
+            }
+
+            if (text.includes('nude') || text.includes('naked') || text.includes('unclothed')) parts.push('desnuda');
+            else if (text.includes('lingerie')) parts.push('en lencería');
+            else if (text.includes('bikini')) parts.push('en bikini');
+            else if (text.includes('towel')) parts.push('en toalla');
+            else if (text.includes('dress')) parts.push('en vestido');
+            else if (text.includes('robe')) parts.push('en bata');
+            else if (text.includes('bodysuit')) parts.push('en body');
+
+            const locations = {
+                'bedroom': 'habitación', 'bathroom': 'baño', 'luxury bedroom': 'habitación lujosa',
+                'hotel room': 'hotel', 'jacuzzi': 'jacuzzi', 'sauna': 'sauna',
+                'poolside': 'piscina', 'beach': 'playa', 'yacht': 'yate',
+                'rooftop': 'azotea', 'spa': 'spa', 'shower': 'ducha'
+            };
+            for (const [en, es] of Object.entries(locations)) {
+                if (text.includes(en)) { parts.push(`en ${es}`); break; }
+            }
+
+            if (text.includes('rear view') || text.includes('back view') || text.includes('from behind')) parts.push('vista trasera');
+            else if (text.includes('side profile') || text.includes('side view')) parts.push('perfil lateral');
+            else if (text.includes('close-up') || text.includes('closeup')) parts.push('primer plano');
+            else if (text.includes('full body')) parts.push('cuerpo completo');
+
+            const expressions = {
+                'seductive': 'seductora', 'lustful': 'lujuriosa', 'biting lip': 'mordiendo labio',
+                'playful': 'juguetona', 'sultry': 'sensual', 'intense eye contact': 'mirada intensa'
+            };
+            for (const [en, es] of Object.entries(expressions)) {
+                if (text.includes(en)) { parts.push(es); break; }
+            }
+
+            if (text.includes('wet')) parts.push('mojada');
+            if (text.includes('oil')) parts.push('con aceite');
+            if (text.includes('sweat')) parts.push('sudorosa');
+
+            return parts.length > 0 ? parts.join(', ') : 'Imagen generada';
+        }
+
+        function displayPrompts(prompts) {
+            const promptDisplay = document.getElementById('promptDisplay');
+
+            if (prompts.length === 1) {
+                const p = prompts[0];
+                const tokens = estimateTokens(p.positive_prompt);
+                const summary = generatePromptSummary(p);
+                promptDisplay.innerHTML = `
+                    <div class="prompt-section">
+                        ${summary ? `<div class="prompt-summary">💋 ${summary}</div>` : ''}
+                        <h3>📝 Prompt
+                            <span class="prompt-buttons">
+                                <button class="copy-individual-btn" onclick="copyIndividualPrompt(0)">📋 Copiar JSON</button>
+                            </span>
+                        </h3>
+                        <p class="token-count">~${tokens} tokens estimados</p>
+                        <div class="prompt-text"><strong>Positive:</strong> ${p.positive_prompt}<br><br><strong>Negative:</strong> ${p.negative_prompt}</div>
+                        <details style="margin-top: 10px;">
+                            <summary style="cursor: pointer; color: #667eea; font-size: 0.9em;">Ver JSON completo</summary>
+                            <div class="prompt-json"><pre>${JSON.stringify(p, null, 2)}</pre></div>
+                        </details>
+                    </div>`;
+            } else {
+                let html = '';
+                prompts.forEach((prompt, index) => {
+                    const tokens = estimateTokens(prompt.positive_prompt);
+                    const summary = generatePromptSummary(prompt);
+                    html += `
+                        <div class="prompt-section">
+                            ${summary ? `<div class="prompt-summary">💋 ${summary}</div>` : ''}
+                            <h3>📝 Prompt ${index + 1}
+                                <span class="prompt-buttons">
+                                    <button class="copy-individual-btn" onclick="copyIndividualPrompt(${index})">📋 Copiar JSON</button>
+                                </span>
+                            </h3>
+                            <p class="token-count">~${tokens} tokens</p>
+                            <div class="prompt-text"><strong>Positive:</strong> ${prompt.positive_prompt}<br><br><strong>Negative:</strong> ${prompt.negative_prompt}</div>
+                            <details style="margin-top: 10px;">
+                                <summary style="cursor: pointer; color: #667eea; font-size: 0.9em;">Ver JSON completo</summary>
+                                <div class="prompt-json"><pre>${JSON.stringify(prompt, null, 2)}</pre></div>
+                            </details>
+                        </div>`;
+                });
+                promptDisplay.innerHTML = html;
+            }
+            window.currentPrompts = prompts;
+        }
+
+        function copyToClipboard() {
+            const copyBtn = document.getElementById('copyBtn');
+            if (!window.currentPrompts) return;
+
+            const textToCopy = window.currentPrompts.length === 1
+                ? JSON.stringify(window.currentPrompts[0], null, 2)
+                : JSON.stringify(window.currentPrompts, null, 2);
+            const originalText = copyBtn.textContent;
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                copyBtn.textContent = '✅ ¡Copiados!';
+                copyBtn.classList.add('copied');
+                setTimeout(() => { copyBtn.textContent = originalText; copyBtn.classList.remove('copied'); }, 2000);
+            }).catch(err => alert('Error al copiar: ' + err));
+        }
+
+        function copyIndividualPrompt(index) {
+            if (!window.currentPrompts || !window.currentPrompts[index]) return;
+            const textToCopy = JSON.stringify(window.currentPrompts[index], null, 2);
+            const buttons = document.querySelectorAll('.copy-individual-btn');
+            const btn = buttons[index];
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = btn.textContent;
+                btn.textContent = '✅ ¡Copiado!';
+                btn.classList.add('copied');
+                setTimeout(() => { btn.textContent = originalText; btn.classList.remove('copied'); }, 2000);
+            }).catch(err => alert('Error al copiar: ' + err));
+        }
+
+        // Initialize
+        document.querySelector('[data-wet="false"]').classList.add('active');
+        updateLevelOptions();
+        renderHistory();
+    </script>
+</body>
+</html>
