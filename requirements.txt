@@ -1,0 +1,8 @@
+# Generador de Prompts para IA
+
+# Dependencias para la interfaz web
+Flask>=3.0.0
+
+# Dependencias opcionales (para futuras mejoras):
+# requests>=2.28.0       # Para APIs web
+# pydantic>=1.10.0       # Para validación adicional

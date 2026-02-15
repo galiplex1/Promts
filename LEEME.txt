@@ -1,0 +1,67 @@
+═══════════════════════════════════════════════════════════════
+  🎨 GENERADOR DE PROMPTS IA - INTERFAZ WEB
+═══════════════════════════════════════════════════════════════
+
+¿CÓMO USAR?
+
+► OPCIÓN 1 (MÁS FÁCIL):
+  Haz doble click en: iniciar_web_auto.bat
+  
+► OPCIÓN 2:
+  Haz doble click en: iniciar_web.bat
+  Luego abre tu navegador en: http://localhost:5000
+
+═══════════════════════════════════════════════════════════════
+
+📋 UNA VEZ ABIERTA LA INTERFAZ WEB:
+
+1. Selecciona "Con Ropa" o "Sin Ropa"
+
+2. Si seleccionaste "Sin Ropa":
+   - Elige si quieres que esté mojada o seca
+   - Selecciona la cobertura (toalla, sábana, etc.)
+
+3. Indica cuántos prompts quieres generar (1-50)
+
+4.  Genera Prompts
+
+5. Copia el resultado con el botón "Copiar"
+
+6. ¡Pégalo en tu aplicación de IA!
+
+═══════════════════════════════════════════════════════════════
+
+✨ VENTAJAS DE LA INTERFAZ WEB:
+
+✓ No necesitas editar archivos
+✓ Ves el resultado inmediatamente
+✓ Copias todo con un botón
+✓ Genera hasta 50 prompts a la vez
+✓ Interfaz moderna y fácil de usar
+
+═══════════════════════════════════════════════════════════════
+
+📁 ARCHIVOS IMPORTANTES:
+
+iniciar_web_auto.bat  → Abre la web + navegador automático
+iniciar_web.bat       → Abre solo el servidor web
+iniciar.bat           → Interfaz de línea de comandos (antigua)
+
+INICIO_RAPIDO.md      → Guía rápida
+README.md             → Documentación completa
+README_WEB.md         → Guía detallada de la interfaz web
+
+═══════════════════════════════════════════════════════════════
+
+⚠️ IMPORTANTE:
+
+- Python ya está instalado (3.12.10) ✓
+- Flask se instala automáticamente la primera vez
+- La interfaz web solo funciona mientras el servidor esté activo
+- Presiona Ctrl+C en la ventana de terminal para detenerlo
+
+═══════════════════════════════════════════════════════════════
+
+¿PROBLEMAS? Lee: INICIO_RAPIDO.md
+
+═══════════════════════════════════════════════════════════════
