@@ -275,6 +275,28 @@
                     <p class="info-text" id="levelDescription">Usa controles personalizados abajo</p>
                 </div>
 
+                <div class="form-group">
+                    <label>👤 Estilo de Persona</label>
+                    <select id="personStyle" style="margin-bottom: 10px;">
+                        <option value="normal">😊 Normal - Belleza natural</option>
+                        <option value="futbolera">⚽ Futbolera - Atlética deportiva</option>
+                        <option value="alternativa">🎸 Alternativa - Tatuajes y piercing</option>
+                        <option value="gotica">🖤 Gótica - Estética oscura</option>
+                        <option value="pija">💎 Pija - Elegante sofisticada</option>
+                        <option value="hipster">🎨 Hipster - Indie artística</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>💗 Tamaño de Pechos</label>
+                    <select id="breastSize" style="margin-bottom: 10px;">
+                        <option value="small">Pequeños (A-cup) - Perky y petite</option>
+                        <option value="medium" selected>Medianos (B-cup) - Naturales y proporcionados</option>
+                        <option value="large">Grandes (C-cup) - Llenos y redondos</option>
+                        <option value="huge">Enormes (D+) - Muy grandes y prominentes</option>
+                    </select>
+                </div>
+
                 <div id="classicControls">
                     <div class="form-group">
                         <label>Tipo de Imagen</label>
@@ -561,9 +583,13 @@
             generateBtn.disabled = true;
 
             const explicitnessLevel = parseInt(document.getElementById('explicitnessLevel').value);
+            const personStyle = document.getElementById('personStyle').value;
+            const breastSize = document.getElementById('breastSize').value;
 
             const config = {
                 explicitness_level: explicitnessLevel,
+                person_style: personStyle,
+                breast_size: breastSize,
                 clothed: currentConfig.clothed,
                 wet: currentConfig.wet,
                 custom_options: {

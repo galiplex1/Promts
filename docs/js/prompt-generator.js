@@ -22,92 +22,53 @@ class PromptGenerator {
     constructor() {
         this.config = new PromptConfig();
 
-        // === PERSONAS BASE (expandido con variedad) ===
-        this.person_base = [
-            "confident young woman",
-            "beautiful young woman",
-            "attractive young woman",
-            "stunning young woman",
-            "gorgeous young woman with perfect features",
-            "elegant young woman with refined features",
-            "captivating young woman with expressive eyes",
-            "alluring young woman with striking features",
-            "radiant young woman with glowing skin",
-            "mesmerizing young woman with symmetrical face",
-            "naturally beautiful young woman",
-            "photogenic young woman with high cheekbones",
-            "charismatic young woman with warm smile",
-            "sophisticated young woman with graceful posture",
-            "effortlessly beautiful young woman",
-        ];
+        // === PERSONA BASE FIJA ===
+        this.person_fixed = {
+            base: "stunning young woman, 22 years old",
+            hair: "long flowing blonde hair, silky smooth, sun-kissed highlights",
+            skin: "sun-kissed tan skin, smooth flawless complexion, natural glow",
+            eyes: "bright green eyes, captivating intense gaze",
+            face: "perfect symmetrical face, high cheekbones, full lips",
+            makeup: "natural makeup, glossy lips, subtle eyeliner, fresh look",
+        };
 
-        // === CABELLO ===
-        this.hair_styles = [
-            "long flowing blonde hair",
-            "dark brunette hair, silky straight",
-            "fiery red hair, soft waves",
-            "jet black hair, sleek and shiny",
-            "platinum blonde hair, shoulder length",
-            "honey blonde waves, sun-kissed highlights",
-            "dark auburn hair, loose curls",
-            "chestnut brown hair, natural waves",
-            "light brown hair with caramel highlights",
-            "ash blonde hair in messy bun",
-            "long dark hair, slightly tousled",
-            "short pixie cut, edgy and modern",
-            "beach waves, natural sun-bleached tips",
-            "long straight black hair, glossy shine",
-            "strawberry blonde, soft spiraling curls",
-            "ombre hair dark to light, flowing",
-            "elegant updo with loose strands framing face",
-            "messy bedhead hair, effortlessly sexy",
-            "sleek high ponytail, polished look",
-            "wavy brown hair cascading over shoulders",
-        ];
+        // === ESTILOS DE PERSONA ===
+        this.person_styles = {
+            normal: {
+                modifier: "confident and naturally beautiful",
+                extras: "effortless elegance, girl-next-door charm",
+            },
+            futbolera: {
+                modifier: "athletic soccer player build, sporty and fit",
+                extras: "toned athletic body, post-workout glow, energetic vibe",
+            },
+            alternativa: {
+                modifier: "alternative style, edgy and unique",
+                extras: "tattoos on arms and ribs, nose piercing, rebellious energy",
+            },
+            gotica: {
+                modifier: "gothic aesthetic, dark mysterious beauty",
+                extras: "dark smoky eye makeup, black nail polish, pale skin, mysterious aura",
+            },
+            pija: {
+                modifier: "elegant upscale sophisticated style",
+                extras: "designer jewelry, polished refined look, luxury aesthetic",
+            },
+            hipster: {
+                modifier: "hipster indie style, artistic vibe",
+                extras: "vintage aesthetic, bohemian accessories, creative energy",
+            },
+        };
 
-        // === TONOS DE PIEL ===
-        this.skin_tones = [
-            "fair porcelain skin, flawless complexion",
-            "sun-kissed tan skin, warm natural glow",
-            "olive skin tone, Mediterranean beauty",
-            "light caramel skin, smooth even complexion",
-            "creamy white skin, natural rosy blush on cheeks",
-            "golden bronze skin, sun-touched radiance",
-            "warm honey skin tone, luminous",
-            "pale skin with charming light freckles",
-            "natural tan skin, healthy outdoor glow",
-            "soft peachy skin tone, dewy finish",
-        ];
+        // === TAMAÑOS DE PECHOS ===
+        this.breast_sizes = {
+            small: "small perky breasts, A-cup, petite chest, natural small bust",
+            medium: "medium natural breasts, B-cup, proportional bust, perky and firm",
+            large: "large natural breasts, C-cup, full bust, shapely and round",
+            huge: "huge natural breasts, D-cup or larger, very large bust, voluptuous chest, heavy and full",
+        };
 
-        // === OJOS ===
-        this.eye_details = [
-            "deep blue eyes, captivating gaze",
-            "bright green eyes, mesmerizing intensity",
-            "warm brown eyes with golden flecks",
-            "hazel eyes shifting green to brown",
-            "dark mysterious eyes, deep and soulful",
-            "light grey eyes, icy and striking",
-            "amber eyes, warm and inviting",
-            "crystal clear blue eyes, piercing stare",
-        ];
-
-        // === MAQUILLAJE ===
-        this.makeup_styles = [
-            "natural no-makeup look, fresh dewy face",
-            "subtle natural makeup, glowing skin",
-            "smoky eye makeup, dramatic long lashes",
-            "classic red lipstick, old Hollywood glamour",
-            "soft pink lips, natural blush on cheeks",
-            "bold winged eyeliner, cat eye look",
-            "nude makeup palette, flawless smooth base",
-            "glossy lips, highlighted cheekbones, dewy",
-            "minimal makeup, natural freckles visible",
-            "evening glam makeup, contoured and bronzed",
-            "berry-stained lips, rosy cheeks, fresh",
-            "sun-kissed bronzer, natural golden glow",
-        ];
-
-        // === ACCESORIOS ===
+        // === ACCESORIOS (opcionales) ===
         this.accessories = [
             "delicate gold chain necklace",
             "simple diamond stud earrings",
@@ -773,25 +734,43 @@ class PromptGenerator {
     }
 
     // --- Construye descripción completa de persona ---
-    _buildPersonDescription(level = 0) {
+    _buildPersonDescription(personStyle = 'normal', breastSize = 'medium') {
         const parts = [];
-        parts.push(this._smartChoice(this.person_base, 'person_base'));
-        parts.push(this._smartChoice(this.hair_styles, 'hair_styles'));
-
-        if (level >= 2) {
-            parts.push(this._smartChoice(this.skin_tones, 'skin_tones'));
+        
+        // Base fija
+        parts.push(this.person_fixed.base);
+        parts.push(this.person_fixed.hair);
+        
+        // Estilo seleccionado
+        const style = this.person_styles[personStyle] || this.person_styles.normal;
+        parts.push(style.modifier);
+        
+        // Skin (ajustar según estilo gótico)
+        if (personStyle === 'gotica') {
+            parts.push("fair porcelain skin, pale complexion");
+        } else {
+            parts.push(this.person_fixed.skin);
         }
-
-        if (level >= 3 || (level === 0 && this._randomFloat() > 0.5)) {
-            parts.push(this._smartChoice(this.eye_details, 'eye_details'));
+        
+        parts.push(this.person_fixed.eyes);
+        parts.push(this.person_fixed.face);
+        
+        // Makeup (ajustar según estilo)
+        if (personStyle === 'gotica') {
+            parts.push("dark smoky eye makeup, black lipstick, dramatic gothic look");
+        } else if (personStyle === 'alternativa') {
+            parts.push("edgy makeup, bold eyeliner, alternative style");
+        } else {
+            parts.push(this.person_fixed.makeup);
         }
-
-        if (level >= 2 && this._randomFloat() > 0.4) {
-            parts.push(this._smartChoice(this.makeup_styles, 'makeup_styles'));
-        } else if (level === 0 && this._randomFloat() > 0.6) {
-            parts.push(this._smartChoice(this.makeup_styles, 'makeup_styles'));
-        }
-
+        
+        // Támaño de pechos
+        const breastDesc = this.breast_sizes[breastSize] || this.breast_sizes.medium;
+        parts.push(breastDesc);
+        
+        // Extras del estilo
+        parts.push(style.extras);
+        
         return parts.join(", ");
     }
 
@@ -801,25 +780,30 @@ class PromptGenerator {
             wet = false,
             custom_options = {},
             randomize = true,
-            explicitness_level = 0
+            explicitness_level = 0,
+            person_style = 'normal',
+            breast_size = 'medium',
         } = options;
 
         if (explicitness_level > 0) {
-            return this._generateByLevel(explicitness_level, custom_options, randomize);
+            return this._generateByLevel(explicitness_level, custom_options, randomize, person_style, breast_size);
         }
 
         const prompt_parts = [];
 
         if (!clothed) {
-            // SIN ROPA
+            // SIN ROPA - SIEMPRE CON TANGA
             const conditionValues = Object.values(this.conditions).filter(v => v);
             const condition = wet ? "wet" : (this._randomFloat() > 0.5 ? this._randomChoice(conditionValues) : "");
-            const personDesc = this._buildPersonDescription(0);
+            const personDesc = this._buildPersonDescription(person_style, breast_size);
             if (condition) {
                 prompt_parts.push(`nude of a ${condition} ${personDesc}`);
             } else {
                 prompt_parts.push(`nude of a ${personDesc}`);
             }
+
+            // SIEMPRE tanga cuando desnuda
+            prompt_parts.push("wearing only tiny thong underwear, minimal coverage");
 
             prompt_parts.push(this._smartChoice(this.photo_types, 'photo_types'));
 
@@ -913,7 +897,7 @@ class PromptGenerator {
         } else {
             // CON ROPA
             const condition = wet ? "wet, water droplets on skin" : "";
-            const personDesc = this._buildPersonDescription(0);
+            const personDesc = this._buildPersonDescription(person_style, breast_size);
             if (condition) {
                 prompt_parts.push(`${condition} ${personDesc}`);
             } else {
@@ -1035,9 +1019,9 @@ class PromptGenerator {
         };
     }
 
-    _generateByLevel(level, custom_options, randomize) {
+    _generateByLevel(level, custom_options, randomize, person_style = 'normal', breast_size = 'medium') {
         const prompt_parts = [];
-        const personDesc = this._buildPersonDescription(level);
+        const personDesc = this._buildPersonDescription(person_style, breast_size);
 
         // NIVEL 1: Casual
         if (level === 1) {
@@ -1089,11 +1073,13 @@ class PromptGenerator {
         // NIVEL 4: Sensual
         else if (level === 4) {
             prompt_parts.push(`nude of a ${personDesc}`);
+            
+            // SIEMPRE con tanga en nivel 4
+            prompt_parts.push("wearing only tiny thong underwear, minimal coverage");
+            
             const clothing_opt = custom_options.clothing;
-            if (clothing_opt && clothing_opt !== 'random' && this.clothing[clothing_opt]) {
+            if (clothing_opt && clothing_opt !== 'random' && clothing_opt !== 'none_nude' && this.clothing[clothing_opt]) {
                 prompt_parts.push(this.clothing[clothing_opt]);
-            } else {
-                prompt_parts.push(this._smartChoice(this.clothing_level4, 'clothing_level4'));
             }
             prompt_parts.push(this._smartChoice(this.photo_types, 'photo_types'));
             prompt_parts.push(this._smartChoice(this.body_modifiers_nude, 'body_modifiers_nude'));
@@ -1111,7 +1097,10 @@ class PromptGenerator {
         // NIVEL 5: Explícito
         else if (level === 5) {
             prompt_parts.push(`nude of a ${personDesc}`);
-            prompt_parts.push("completely nude, naked, no clothing, fully exposed");
+            
+            // SIEMPRE con tanga en nivel 5
+            prompt_parts.push("wearing only tiny thong underwear, minimal coverage, naked body");
+            
             prompt_parts.push(this._smartChoice(this.body_mods_level5, 'body_mods_level5'));
             prompt_parts.push(this._smartChoice(this.poses_level5, 'poses_level5'));
             prompt_parts.push(this._smartChoice(this.scenarios_level5, 'scenarios_level5'));
