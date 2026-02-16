@@ -1,6 +1,7 @@
 /**
  * Generador automático de prompts para modelo de IA (SDXL)
  * Versión JavaScript - Sin dependencias de servidor
+ * v2.0 - Enhanced quality + Voting system
  */
 
 class PromptConfig {
@@ -21,327 +22,746 @@ class PromptGenerator {
     constructor() {
         this.config = new PromptConfig();
 
+        // === PERSONAS BASE (expandido con variedad) ===
         this.person_base = [
             "confident young woman",
             "beautiful young woman",
             "attractive young woman",
             "stunning young woman",
+            "gorgeous young woman with perfect features",
+            "elegant young woman with refined features",
+            "captivating young woman with expressive eyes",
+            "alluring young woman with striking features",
+            "radiant young woman with glowing skin",
+            "mesmerizing young woman with symmetrical face",
+            "naturally beautiful young woman",
+            "photogenic young woman with high cheekbones",
+            "charismatic young woman with warm smile",
+            "sophisticated young woman with graceful posture",
+            "effortlessly beautiful young woman",
         ];
 
+        // === CABELLO ===
+        this.hair_styles = [
+            "long flowing blonde hair",
+            "dark brunette hair, silky straight",
+            "fiery red hair, soft waves",
+            "jet black hair, sleek and shiny",
+            "platinum blonde hair, shoulder length",
+            "honey blonde waves, sun-kissed highlights",
+            "dark auburn hair, loose curls",
+            "chestnut brown hair, natural waves",
+            "light brown hair with caramel highlights",
+            "ash blonde hair in messy bun",
+            "long dark hair, slightly tousled",
+            "short pixie cut, edgy and modern",
+            "beach waves, natural sun-bleached tips",
+            "long straight black hair, glossy shine",
+            "strawberry blonde, soft spiraling curls",
+            "ombre hair dark to light, flowing",
+            "elegant updo with loose strands framing face",
+            "messy bedhead hair, effortlessly sexy",
+            "sleek high ponytail, polished look",
+            "wavy brown hair cascading over shoulders",
+        ];
+
+        // === TONOS DE PIEL ===
+        this.skin_tones = [
+            "fair porcelain skin, flawless complexion",
+            "sun-kissed tan skin, warm natural glow",
+            "olive skin tone, Mediterranean beauty",
+            "light caramel skin, smooth even complexion",
+            "creamy white skin, natural rosy blush on cheeks",
+            "golden bronze skin, sun-touched radiance",
+            "warm honey skin tone, luminous",
+            "pale skin with charming light freckles",
+            "natural tan skin, healthy outdoor glow",
+            "soft peachy skin tone, dewy finish",
+        ];
+
+        // === OJOS ===
+        this.eye_details = [
+            "deep blue eyes, captivating gaze",
+            "bright green eyes, mesmerizing intensity",
+            "warm brown eyes with golden flecks",
+            "hazel eyes shifting green to brown",
+            "dark mysterious eyes, deep and soulful",
+            "light grey eyes, icy and striking",
+            "amber eyes, warm and inviting",
+            "crystal clear blue eyes, piercing stare",
+        ];
+
+        // === MAQUILLAJE ===
+        this.makeup_styles = [
+            "natural no-makeup look, fresh dewy face",
+            "subtle natural makeup, glowing skin",
+            "smoky eye makeup, dramatic long lashes",
+            "classic red lipstick, old Hollywood glamour",
+            "soft pink lips, natural blush on cheeks",
+            "bold winged eyeliner, cat eye look",
+            "nude makeup palette, flawless smooth base",
+            "glossy lips, highlighted cheekbones, dewy",
+            "minimal makeup, natural freckles visible",
+            "evening glam makeup, contoured and bronzed",
+            "berry-stained lips, rosy cheeks, fresh",
+            "sun-kissed bronzer, natural golden glow",
+        ];
+
+        // === ACCESORIOS ===
+        this.accessories = [
+            "delicate gold chain necklace",
+            "simple diamond stud earrings",
+            "thin gold bracelet on wrist",
+            "small heart pendant necklace",
+            "silver hoop earrings",
+            "layered dainty necklaces",
+            "elegant choker necklace",
+            "belly chain, subtle and feminine",
+            "anklet bracelet, delicate",
+            "statement ring on finger",
+        ];
+
+        // === ESTILO FOTOGRÁFICO ===
+        this.style_modifiers = [
+            "shot on Kodak Portra 400, warm film grain",
+            "Fujifilm Pro 400H style, pastel tones, soft grain",
+            "cinematic color grading, movie-like quality",
+            "analog photography style, subtle film grain",
+            "editorial photography, high fashion magazine quality",
+            "shot on Canon EOS R5, crisp razor-sharp detail",
+            "Hasselblad medium format, incredible resolution and detail",
+            "natural available light photography, authentic feel",
+            "professional DSLR quality, tack sharp focus",
+            "high fashion editorial look, Vogue quality",
+            "intimate documentary photography style",
+            "shot on Sony A7IV, stunning dynamic range",
+        ];
+
+        // === ATMÓSFERA ===
+        this.atmosphere_details = [
+            "warm intimate atmosphere, cozy and inviting",
+            "moody atmospheric setting, cinematic vibe",
+            "bright airy atmosphere, fresh and clean",
+            "sultry dark atmosphere, mysterious allure",
+            "romantic soft atmosphere, dreamy ethereal quality",
+            "raw authentic atmosphere, candid genuine feel",
+            "luxurious elegant atmosphere, refined and polished",
+            "casual relaxed atmosphere, natural unposed moment",
+        ];
+
+        // === CONDICIONES ===
         this.conditions = {
             wet: "wet",
             dry: "",
-            sweaty: "sweaty",
-            oiled: "oiled skin",
+            sweaty: "sweaty, glistening skin",
+            oiled: "oiled skin, glistening highlights",
         };
 
+        // === MODIFICADORES DE CUERPO (DESNUDO) ===
         this.body_modifiers_nude = [
-            "natural body proportions",
-            "natural body proportions, enormous breast",
-            "natural body proportions, large breast",
-            "natural body proportions, perfect breast",
-            "athletic build, toned body, firm breast",
-            "curvy body, natural proportions, voluptuous figure",
-            "slim body, natural proportions, perky breast",
-            "fit body, defined curves, toned abs",
-            "hourglass figure, wide hips, narrow waist",
-            "thick thighs, round hips, natural curves",
-            "petite body, natural proportions, delicate features",
-            "tall athletic body, long legs, toned figure",
-            "busty figure, natural large breast, curvy waist",
-            "slim waist, round buttocks, feminine curves",
+            "natural body proportions, realistic figure",
+            "natural body proportions, large shapely breasts",
+            "natural body proportions, perfect perky breasts",
+            "athletic build, toned body, firm natural breasts",
+            "curvy body, natural proportions, voluptuous hourglass figure",
+            "slim body, petite frame, perky small breasts",
+            "fit body, defined curves, visible toned abs",
+            "hourglass figure, wide hips, narrow cinched waist",
+            "thick thighs, round hips, natural generous curves",
+            "petite body, delicate features, feminine proportions",
+            "tall athletic body, long toned legs, model figure",
+            "busty figure, natural large breasts, slim waist",
+            "slim waist, round firm buttocks, feminine curves",
+            "toned dancer body, graceful proportions, lean muscle",
+            "soft natural curves, womanly proportions, realistic body",
+            "athletic cheerleader build, perky breasts, toned stomach",
         ];
 
+        // === POSES (DESNUDO) ===
         this.poses_nude = [
-            "sexy pose", "sexual pose", "sensual pose", "seductive pose",
-            "provocative pose", "intimate pose", "alluring pose", "tempting pose",
-            "inviting pose", "flirtatious pose", "sultry pose", "erotic pose, tasteful",
-            "passionate pose", "suggestive pose", "arousing pose, artistic",
-            "teasing pose", "playful seductive pose", "bending over pose",
-            "arching back pose", "looking over shoulder pose",
+            "sexy confident pose, weight on one hip",
+            "sensual pose, one hand in hair",
+            "seductive pose, back slightly arched",
+            "provocative pose, hand on hip",
+            "intimate pose, leaning forward slightly",
+            "alluring pose, looking over bare shoulder",
+            "tempting pose, fingers tracing collarbone",
+            "flirtatious pose, playful twist of body",
+            "sultry pose, chin tilted down, eyes up",
+            "erotic pose, tasteful artistic framing",
+            "passionate pose, hands running through hair",
+            "suggestive pose, subtle hip thrust",
+            "teasing pose, one knee slightly bent",
+            "bending over pose, natural curve of spine",
+            "arching back pose, chest forward, graceful line",
+            "looking over shoulder pose, back muscles visible",
+            "lying on side, head propped on hand",
+            "reclining pose, arms stretched above head",
+            "standing contrapposto, classical pose",
+            "sitting cross-legged, relaxed and intimate",
+            "kneeling pose, sitting on heels, hands on thighs",
+            "leaning against wall, casual confident stance",
         ];
 
+        // === EXPRESIONES FACIALES (expandido) ===
         this.facial_expressions = [
-            "seductive gaze", "lustful eyes", "playful smile", "biting lip",
-            "mouth slightly open", "intense eye contact", "sultry look",
-            "bedroom eyes", "teasing expression", "passionate look",
+            "seductive gaze, knowing half-smile",
+            "lustful eyes, slightly parted lips",
+            "playful smile, mischievous sparkle in eyes",
+            "biting lower lip, intense stare",
+            "mouth slightly open, breathless look",
+            "intense eye contact, burning gaze",
+            "sultry look, hooded bedroom eyes",
+            "bedroom eyes, soft lazy smile",
+            "teasing expression, raised eyebrow",
+            "passionate look, flushed cheeks",
+            "innocent doe eyes, soft pouty lips",
+            "confident smirk, self-assured expression",
+            "dreamy faraway gaze, soft expression",
+            "coy smile, looking through lashes",
+            "fierce determined stare, strong jawline",
+            "laughing naturally, genuine joy",
+            "mysterious Mona Lisa smile, enigmatic",
+            "vulnerable open expression, raw emotion",
+            "smoldering intense gaze, magnetic",
+            "soft serene expression, peaceful beauty",
         ];
 
+        // === ROPA/COBERTURA ===
         this.clothing = {
-            towel: "covered with a towel",
-            towel_barely: "barely covered with a small towel",
-            bedsheet: "covered with bedsheet",
-            bedsheet_revealing: "partially covered with bedsheet, revealing curves",
-            lingerie: "wearing lingerie",
-            lingerie_sheer: "wearing sheer see-through lingerie",
-            lingerie_lace: "wearing lace lingerie, barely covering",
-            bikini: "wearing bikini",
-            bikini_micro: "wearing micro bikini, very revealing",
-            underwear: "wearing underwear",
-            underwear_tiny: "wearing tiny thong underwear",
-            bra_panties: "wearing matching bra and panties",
-            nightgown: "wearing sheer nightgown",
-            nightgown_transparent: "wearing transparent nightgown",
-            robe: "wearing open robe",
-            robe_revealing: "wearing loosely tied robe, revealing body",
-            body_paint: "wearing only body paint",
-            jewelry_only: "wearing only jewelry",
-            silk_robe: "wearing silk robe, barely tied",
-            mesh_lingerie: "wearing mesh lingerie, see-through",
-            harness_lingerie: "wearing harness lingerie set",
-            stockings_garter: "wearing stockings and garter belt only",
-            corset: "wearing tight corset, revealing",
-            bodysuit_sheer: "wearing sheer bodysuit",
-            none_nude: "nude",
+            towel: "covered with a towel, freshly showered",
+            towel_barely: "barely covered with a small towel, slipping off",
+            bedsheet: "wrapped in white bedsheet, morning light",
+            bedsheet_revealing: "partially covered with silk bedsheet, revealing curves",
+            lingerie: "wearing delicate lace lingerie",
+            lingerie_sheer: "wearing sheer see-through lingerie, skin visible underneath",
+            lingerie_lace: "wearing French lace lingerie, barely covering",
+            bikini: "wearing bikini, beach ready",
+            bikini_micro: "wearing micro bikini, extremely revealing, minimal coverage",
+            underwear: "wearing cotton underwear, casual intimate",
+            underwear_tiny: "wearing tiny thong underwear, minimal fabric",
+            bra_panties: "wearing matching lace bra and panties set",
+            nightgown: "wearing sheer silk nightgown, flowing fabric",
+            nightgown_transparent: "wearing transparent chiffon nightgown, body visible",
+            robe: "wearing open silk robe, loosely tied",
+            robe_revealing: "wearing loosely tied satin robe, falling off one shoulder",
+            body_paint: "wearing only artistic body paint, nude underneath",
+            jewelry_only: "wearing only delicate jewelry, completely exposed",
+            silk_robe: "wearing silk kimono robe, barely tied, sliding open",
+            mesh_lingerie: "wearing mesh fishnet lingerie, fully see-through",
+            harness_lingerie: "wearing leather harness lingerie set, bondage style",
+            stockings_garter: "wearing lace-top thigh-high stockings and garter belt only",
+            corset: "wearing tight boned corset, cinched waist, push-up effect",
+            bodysuit_sheer: "wearing sheer mesh bodysuit, second-skin effect",
+            none_nude: "completely nude, natural",
         };
 
-        // NIVEL 1: Casual/Inocente
+        // === NIVEL 1: Casual/Inocente ===
         this.clothing_level1 = [
             "wearing cozy oversized hoodie and sweatpants",
-            "wearing casual jeans and t-shirt",
-            "wearing comfortable sweater and leggings",
-            "wearing casual home clothes, relaxed",
-            "wearing everyday outfit, natural look",
-            "wearing simple dress, modest style",
-            "wearing cardigan and jeans, casual",
+            "wearing casual jeans and vintage t-shirt",
+            "wearing comfortable knit sweater and leggings",
+            "wearing casual home clothes, relaxed and natural",
+            "wearing everyday outfit, effortless natural look",
+            "wearing simple cotton sundress, modest and fresh",
+            "wearing cardigan and mom jeans, casual chic",
+            "wearing flannel shirt and shorts, cozy weekend look",
+            "wearing athletic wear, post-workout casual",
         ];
 
         this.poses_level1 = [
-            "relaxed pose", "casual stance", "natural pose",
-            "comfortable position", "candid moment",
+            "relaxed natural pose, genuine comfort",
+            "casual candid stance, mid-movement",
+            "natural sitting pose, legs crossed",
+            "comfortable lounging position",
+            "candid laughing moment, unposed",
+            "standing casually, hand in pocket",
+            "leaning against doorframe, relaxed",
         ];
 
         this.scenarios_level1 = [
-            "at home with pet dog", "reading a book on couch",
-            "having coffee in kitchen", "walking in park",
-            "doing everyday activities", "relaxing at home",
+            "at home with pet dog, cozy living room",
+            "reading a book on plush couch, afternoon light",
+            "having morning coffee in sunlit kitchen",
+            "walking through autumn park, golden leaves",
+            "doing everyday activities, natural environment",
+            "relaxing at home on lazy Sunday",
+            "cooking in kitchen, casual domestic moment",
+            "sitting by window, rainy day, warm inside",
         ];
 
-        // NIVEL 2: Sugerente
+        // === NIVEL 2: Sugerente ===
         this.clothing_level2 = [
-            "wearing tight yoga pants and fitted tank top",
-            "wearing skinny jeans and crop top",
-            "wearing bodycon dress, hugging curves",
-            "wearing sports bra and leggings, athletic look",
-            "wearing fitted dress, showing silhouette",
-            "wearing tight jeans and low-cut top",
+            "wearing tight yoga pants and fitted tank top, showing figure",
+            "wearing skinny jeans and crop top, midriff exposed",
+            "wearing bodycon dress, hugging every curve",
+            "wearing sports bra and leggings, athletic and toned",
+            "wearing fitted cocktail dress, showing silhouette",
+            "wearing tight jeans and low-cut v-neck top, subtle cleavage",
+            "wearing off-shoulder knit sweater, exposed collarbone",
+            "wearing high-waisted shorts and tied crop top, summer vibes",
+            "wearing tight pencil skirt and fitted blouse, office sexy",
         ];
 
         this.poses_level2 = [
-            "flirty pose", "playful stance", "confident pose",
-            "teasing expression", "suggestive look",
+            "flirty pose, hip cocked to one side",
+            "playful stance, tossing hair back",
+            "confident power pose, shoulders back",
+            "teasing expression, finger on lips",
+            "suggestive look, leaning forward slightly",
+            "stretching pose, arms up, shirt riding up",
+            "casual model pose, natural and effortless",
         ];
 
-        // NIVEL 3: Provocativo
+        // === NIVEL 3: Provocativo ===
         this.clothing_level3 = [
-            "wearing lace lingerie set", "wearing bikini",
-            "wearing lace bralette and panties", "wearing sheer nightgown",
-            "wearing tight mini skirt and crop top", "wearing string bikini",
-            "wearing revealing lingerie",
+            "wearing black lace lingerie set, delicate and sexy",
+            "wearing string bikini, minimal coverage",
+            "wearing lace bralette and matching panties",
+            "wearing sheer silk nightgown, body visible beneath",
+            "wearing tight mini skirt and tiny crop top, maximum skin",
+            "wearing micro string bikini, barely there",
+            "wearing revealing lace teddy lingerie",
+            "wearing cutout bodysuit, strategic skin exposure",
+            "wearing sheer babydoll lingerie, see-through",
         ];
 
         this.poses_level3 = [
-            "seductive pose", "provocative stance", "alluring position",
-            "sensual pose", "tempting look",
+            "seductive pose, finger tracing neckline",
+            "provocative stance, one strap falling off shoulder",
+            "alluring position, lying on bed, propped on elbows",
+            "sensual pose, arching back on bed",
+            "tempting look, pulling at waistband",
+            "kneeling on bed, looking up at camera",
+            "reclining on chaise, one leg extended",
         ];
 
-        // NIVEL 4: Sensual
+        // === NIVEL 4: Sensual ===
         this.clothing_level4 = [
-            "covered with towel", "barely covered with small towel",
-            "wrapped in bedsheet", "partially covered with bedsheet, revealing curves",
-            "wearing sheer see-through lingerie", "wearing open robe",
+            "covered with towel, slipping off, skin glistening",
+            "barely covered with small towel, about to drop",
+            "wrapped loosely in silk bedsheet, morning after",
+            "partially covered with bedsheet, one breast exposed, revealing curves",
+            "wearing sheer see-through lingerie, everything visible",
+            "wearing open silk robe, nothing underneath",
+            "wearing only thigh-high stockings, nothing else",
+            "wearing unbuttoned oversized shirt, bare underneath",
         ];
 
         this.poses_level4 = [
-            "sensual pose", "intimate position", "alluring stance",
-            "seductive posture", "provocative pose",
+            "sensual pose, bedsheet sliding down body",
+            "intimate position, reaching toward camera",
+            "alluring stance, towel barely held in place",
+            "seductive posture, lying in rumpled sheets",
+            "provocative pose, straddling edge of bed",
+            "post-shower pose, water droplets on skin",
+            "undressing moment, clothing mid-removal",
         ];
 
-        // NIVEL 5: Explícito
+        // === NIVEL 5: Explícito ===
         this.poses_level5 = [
-            "on all fours position, back arched, looking over shoulder at camera, correct anatomy, natural spine",
-            "on hands and knees, doggy style pose, rear view, round buttocks visible, back arched naturally",
-            "bent over bed edge, ass up, face down, back view, arched spine, natural body position",
-            "kneeling on bed, legs apart, hands on thighs, front view, confident posture",
-            "lying on back, legs spread, arms above head, inviting position, looking at camera",
-            "sitting on edge of bed, legs open, leaning back on hands, direct eye contact",
-            "standing bent over, hands on knees, rear angle view, looking back at camera",
-            "lying face down on bed, ass raised, side angle, head turned to camera",
-            "straddling position, kneeling upright, hands on hips, frontal view",
-            "on knees, arching back deeply, hands behind head, chest pushed forward",
-            "squatting position, facing camera, hands on floor, intimate angle",
-            "lying on side, top leg raised, revealing pose, eye contact with camera",
+            "on all fours position, back arched naturally, looking over shoulder at camera, perfect anatomy, natural confident spine curve",
+            "on hands and knees, doggy style pose, rear view, round buttocks prominently visible, back arched naturally, skin catching light",
+            "bent over bed edge, ass raised high, face resting on silk sheets, back view, spine arched beautifully, natural body position",
+            "kneeling on bed, legs apart, hands resting on thighs, frontal view, confident open posture, direct gaze",
+            "lying on back, legs spread invitingly, arms stretched above head, inviting vulnerable position, looking directly at camera",
+            "sitting on edge of bed, legs wide open, leaning back on hands, direct challenging eye contact, confident",
+            "standing bent over, hands gripping knees, rear angle view, looking back seductively at camera over shoulder",
+            "lying face down on satin sheets, ass raised provocatively, side angle, head turned to camera with half-smile",
+            "straddling position, kneeling upright, hands running through hair, frontal view, chest forward",
+            "on knees, arching back deeply, hands clasped behind head, chest and breasts pushed forward, dramatic backlight",
+            "squatting position, facing camera, hands braced on floor between knees, intimate low angle, direct eye contact",
+            "lying on side, top leg raised and bent, revealing intimate areas, languid eye contact with camera, relaxed sensuality",
+            "reverse cowgirl position, looking back over shoulder, ass prominent, hands on bed for support",
+            "spread eagle on bed, arms and legs outstretched, completely exposed, vulnerable but confident expression",
+            "standing with one leg raised on chair, frontal view, full body exposed, hand on raised thigh",
         ];
 
         this.body_mods_level5 = [
-            "perfect female anatomy, detailed realistic body, natural skin texture, visible muscle definition",
-            "curvy body, wide hips, narrow waist, natural large breasts, realistic proportions",
-            "athletic toned body, firm buttocks, flat stomach, defined abs, natural breasts",
-            "voluptuous figure, thick thighs, round ass, hourglass shape, natural curves",
-            "slim petite body, small perky breasts, tight figure, delicate features",
-            "fit body, long legs, toned glutes, feminine muscle definition, proportional breasts",
+            "perfect female anatomy, hyper-detailed realistic body, natural skin texture with subtle pores and imperfections, visible natural muscle definition under soft skin",
+            "curvy voluptuous body, wide rounded hips, narrow waist, natural large breasts with realistic weight and shape, proportional realistic figure",
+            "athletic toned body, firm round buttocks, flat defined stomach, visible ab lines, natural perky breasts, strong thighs",
+            "voluptuous figure, thick soft thighs, round full ass, dramatic hourglass shape, natural pendulous curves",
+            "slim petite body, small perky breasts with visible nipples, tight compact figure, delicate bone structure, youthful skin",
+            "fit toned body, long lean legs, sculpted glutes, feminine muscle definition visible, proportional medium breasts, dancer physique",
+            "naturally curvy body, soft belly, real proportions, large natural breasts, wide hips, authentic feminine body",
+            "model-like body, long torso, endless legs, small waist, B-cup natural breasts, runway proportions",
         ];
 
         this.lighting_level5 = [
-            "soft warm lighting from side, shadows accentuating curves, intimate atmosphere",
-            "dim bedroom lighting, warm lamp glow, soft shadows on skin",
-            "natural window light from behind, silhouette edges, golden rim light on body",
-            "candlelight ambiance, warm flickering light, deep intimate shadows",
-            "professional studio lighting, key light on body, soft fill, dramatic contrast",
-            "moody low-key lighting, single light source, deep shadows emphasizing form",
+            "soft warm lighting from side, shadows lovingly accentuating every curve, intimate cozy atmosphere, warm color temperature",
+            "dim bedroom lighting, warm amber lamp glow, soft shadows playing on bare skin, romantic mood",
+            "natural window light from behind, golden silhouette edges, warm rim light tracing body contours, backlit beauty",
+            "candlelight ambiance, warm flickering golden light, deep romantic shadows, skin glowing warmly",
+            "professional studio lighting, key light sculpting body perfectly, soft fill light, dramatic contrast on curves",
+            "moody low-key lighting, single dramatic light source, deep shadows emphasizing feminine form, chiaroscuro effect",
+            "golden hour sunlight streaming through blinds, striped light pattern across nude body, warm and artistic",
+            "overhead ring light, even illumination, catch lights in eyes, professional intimate shoot lighting",
         ];
 
         this.scenarios_level5 = [
-            "private intimate moment, bedroom setting",
-            "erotic photoshoot session, professional setup",
-            "spontaneous intimate photo, authentic moment",
-            "private boudoir session, luxurious setting",
-            "intimate bedroom scene, after undressing",
-            "personal explicit photo, private moment",
+            "private intimate moment, luxurious bedroom setting, silk sheets rumpled",
+            "erotic boudoir photoshoot session, professional studio, artistic direction",
+            "spontaneous intimate photo, authentic unplanned moment, genuine desire",
+            "private boudoir session in luxurious penthouse, city lights through windows",
+            "intimate bedroom scene, just undressed, clothes scattered on floor",
+            "personal explicit photo for lover, raw desire, private moment captured",
+            "morning light intimate session, just woke up, natural and real",
+            "after-bath intimate moment, skin still damp, steamy atmosphere",
         ];
 
         this.expressions_level5 = [
-            "lustful gaze at camera, parted lips, heavy-lidded eyes, flushed cheeks",
-            "intense eye contact, biting lower lip, aroused expression",
-            "mouth slightly open, bedroom eyes, seductive smirk",
-            "looking over shoulder with desire, half-closed eyes, teasing smile",
-            "direct passionate stare, lips parted, heated expression",
-            "eyes closed in pleasure, head tilted back, natural expression",
+            "lustful gaze directly at camera, lips parted and glossy, heavy-lidded eyes, flushed pink cheeks, desire visible",
+            "intense burning eye contact, teeth gently biting lower lip, visibly aroused expression, dilated pupils",
+            "mouth slightly open in anticipation, bedroom eyes half-closed, seductive knowing smirk",
+            "looking over shoulder with raw desire, half-closed sultry eyes, teasing tongue touching upper lip",
+            "direct passionate stare into lens, lips parted breathing heavily, heated flushed expression",
+            "eyes closed in ecstasy, head tilted back, neck exposed, natural blissful expression, lips parted",
+            "vulnerable open expression, soft pleading eyes, innocent yet aware, lips slightly pouty",
+            "fierce dominant stare, commanding expression, confident sexuality, slight smirk of control",
         ];
 
         this.camera_level5 = [
-            "shot from behind and slightly below, emphasizing curves, 50mm lens, f1.8",
-            "low angle rear view, natural body proportions, 35mm lens, wide shot",
-            "eye level front view, full body visible, 85mm lens, f2.0, sharp focus",
-            "high angle looking down, full body in frame, 35mm lens, intimate perspective",
-            "side angle, full body profile, 70mm lens, f1.8, detailed",
-            "close-up from behind, focusing on curves, 50mm macro, shallow depth of field",
-            "three-quarter rear angle, body and face visible, 85mm lens, bokeh background",
+            "shot from behind and slightly below, emphasizing curves and rear, 50mm lens, f1.8, shallow depth of field",
+            "low angle rear view, natural body proportions emphasized, 35mm lens, wider perspective, dramatic angle",
+            "eye level front view, full body clearly visible, 85mm portrait lens, f2.0, razor sharp focus on body",
+            "high angle looking down at subject, full body in frame, 35mm lens, intimate dominating perspective",
+            "side profile angle, full body silhouette visible, 70mm lens, f1.8, detailed body contour",
+            "close-up from behind, focusing on curves and form, 50mm macro, extreme shallow depth of field, bokeh",
+            "three-quarter rear angle, body and face both visible, 85mm lens, creamy bokeh background",
+            "worm's eye view looking up, dramatic foreshortening, 24mm wide angle, powerful perspective",
         ];
 
+        // === ROPA COMPLETA (nivel 0 con ropa) ===
         this.clothing_full = [
-            "wearing casual home outfit",
-            "wearing oversized shirt, no bra, visible nipples through fabric",
-            "wearing sports bra and leggings",
-            "wearing tight yoga pants and sports bra, showing curves",
-            "wearing crop top and shorts",
-            "wearing very short crop top and tiny shorts, showing midriff",
-            "wearing tight dress",
-            "wearing tight bodycon dress, hugging curves",
-            "wearing casual summer dress",
-            "wearing short sundress, showing legs",
-            "wearing fitted tank top and jeans",
-            "wearing low-cut tank top and tight jeans, cleavage visible",
-            "wearing oversized shirt",
-            "wearing oversized shirt as dress, bare legs",
-            "wearing bikini top and jean shorts",
-            "wearing string bikini top and denim shorts, beach style",
-            "wearing lace bralette and panties, lingerie style",
-            "wearing sheer white shirt, wet, see-through",
-            "wearing tight mini skirt and crop top",
-            "wearing fishnet stockings and garter belt with lingerie",
-            "wearing thigh-high stockings and oversized sweater",
-            "wearing nothing but boyfriend's shirt, unbuttoned",
-            "wearing latex bodysuit, shiny and tight",
-            "wearing leather lingerie, dominatrix style",
-            "wearing torn jeans and sports bra, casual sexy",
-            "wearing satin slip dress, clinging to curves",
-            "wearing mesh crop top and leather pants",
-            "wearing denim micro skirt and halter top",
-            "wearing off-shoulder dress, showing skin",
-            "wearing tube top and booty shorts",
-            "wearing deep v-neck bodysuit, revealing",
-            "wearing sheer lace dress over lingerie",
+            "wearing casual home outfit, comfortable and real",
+            "wearing oversized boyfriend shirt, no bra, nipples faintly visible through thin fabric",
+            "wearing sports bra and leggings, athletic and toned",
+            "wearing tight yoga pants and sports bra, every curve defined",
+            "wearing crop top and high-waisted shorts, midriff showing",
+            "wearing very short crop top and tiny shorts, maximum skin",
+            "wearing tight bodycon dress, fabric hugging every curve",
+            "wearing tight red bodycon dress, curves on full display",
+            "wearing casual flowy summer dress, feminine and light",
+            "wearing short sundress, long bare legs, summer vibes",
+            "wearing fitted ribbed tank top and jeans, casual sexy",
+            "wearing deep v-neck tank top and tight jeans, cleavage prominent",
+            "wearing oversized knit sweater, bare legs underneath",
+            "wearing oversized shirt as dress, long bare legs, morning look",
+            "wearing bikini top and cutoff jean shorts, beach casual",
+            "wearing string bikini top and tiny denim shorts, tanned skin",
+            "wearing lace bralette and silk panties, intimate lingerie moment",
+            "wearing sheer white shirt soaked in water, completely see-through, skin visible",
+            "wearing tight leather mini skirt and crop top, edgy nightlife",
+            "wearing fishnet stockings and garter belt with black lingerie set",
+            "wearing thigh-high knit stockings and oversized cozy sweater, nothing else",
+            "wearing nothing but boyfriend's white shirt, half-unbuttoned, bare legs",
+            "wearing shiny latex bodysuit, skin-tight, reflecting light",
+            "wearing leather harness lingerie, dominatrix aesthetic",
+            "wearing torn distressed jeans and sports bra, effortlessly sexy",
+            "wearing liquid satin slip dress, clinging to every curve, no underwear visible",
+            "wearing mesh crop top and leather pants, nightclub ready",
+            "wearing denim micro skirt and tied halter top, festival style",
+            "wearing elegant off-shoulder evening dress, showing bare shoulders and collarbone",
+            "wearing tube top and booty shorts, maximum skin exposure",
+            "wearing deep plunging v-neck bodysuit, cleavage to navel",
+            "wearing sheer lace dress layered over matching lingerie, elegant erotic",
         ];
 
+        // === TIPOS DE FOTO (expandido) ===
         this.photo_types = [
-            "a photo taken with an iPhone",
-            "an amateur photo taken with smartphone",
-            "a selfie taken with iPhone",
-            "a professional photo",
-            "a candid photo",
+            "a photo taken with iPhone 15 Pro, natural mobile quality",
+            "an amateur photo taken with smartphone, authentic and real",
+            "a selfie taken with iPhone front camera, close and personal",
+            "a professional photo, studio quality lighting and composition",
+            "a candid photo, unposed natural moment captured",
+            "a mirror selfie, bathroom mirror, flash visible",
+            "a photo taken by boyfriend, intimate personal perspective",
+            "a professional boudoir photograph, artistic and sensual",
+            "a spontaneous photo, caught between moments",
+            "a high-end editorial photograph, magazine quality",
+            "amateur bedroom photo, warm lamp light, genuine",
+            "professional portrait photograph, perfectly lit",
         ];
 
+        // === ILUMINACIÓN (expandido) ===
         this.lighting = [
-            "soft diffused lighting, chiaroscuro shadows",
-            "natural window lighting, soft shadows",
-            "warm golden hour lighting",
-            "soft bedroom lighting, intimate atmosphere",
-            "dramatic lighting, deep shadows",
-            "bright natural lighting",
-            "moody dim lighting",
+            "soft diffused lighting, beautiful chiaroscuro shadows on body",
+            "natural window lighting, soft directional shadows",
+            "warm golden hour lighting, everything bathed in gold",
+            "soft bedroom lamp lighting, intimate warm atmosphere",
+            "dramatic single-source lighting, deep moody shadows",
+            "bright natural daylight, fresh and vibrant",
+            "moody dim lighting, mysterious and alluring",
+            "neon accent lighting, modern urban vibe, colored reflections on skin",
+            "overhead ring light, even flattering illumination",
+            "candlelight only, warm flickering romantic glow",
+            "backlit silhouette lighting, golden rim light outlining body",
+            "soft overcast natural light, even and flattering, no harsh shadows",
+            "blue hour twilight, cool tones, city lights in background",
+            "studio beauty lighting, butterfly pattern, flawless skin rendering",
         ];
 
+        // === COMPOSICIÓN TÉCNICA (expandido) ===
         this.technical_composition = [
-            "tasteful composition, cinematic framing, 85mm lens, f1.8",
-            "intimate framing, 50mm lens, f2.0",
-            "portrait composition, 85mm lens, f1.4",
-            "close-up composition, 70mm lens, f1.8",
-            "full body composition, 35mm lens, f2.8",
+            "tasteful composition, cinematic framing, 85mm lens, f1.8, shallow DOF",
+            "intimate close framing, 50mm lens, f2.0, subject fills frame",
+            "classic portrait composition, 85mm lens, f1.4, creamy bokeh background",
+            "tight close-up composition, 70mm lens, f1.8, extreme detail",
+            "full body composition, 35mm lens, f2.8, environmental context",
+            "rule of thirds composition, 85mm lens, f2.0, balanced frame",
+            "center-weighted composition, 50mm lens, f1.8, subject dominant",
+            "wide environmental portrait, 24mm lens, f4.0, scene context",
+            "medium close-up, waist up, 70mm lens, f2.0, intimate distance",
+            "dramatic composition, dutch angle slight tilt, 50mm, f1.4, dynamic energy",
         ];
 
+        // === TEXTURA Y PIEL (expandido) ===
         this.texture_quality = [
-            "ultra realistic skin texture, subtle skin details, soft shadows on curves",
-            "realistic skin texture, natural skin details, authentic look",
-            "photorealistic skin, natural imperfections, real skin texture",
-            "detailed skin texture, visible pores, natural look",
+            "ultra realistic skin texture, subtle pores visible, soft natural shadows on curves",
+            "realistic skin texture, natural imperfections, authentic unretouched look",
+            "photorealistic skin rendering, visible fine peach fuzz, real human skin",
+            "detailed skin texture, natural fine pores, subtle skin variations",
+            "hyper-detailed skin, subsurface scattering effect, lifelike translucency",
+            "natural skin with subtle moles and freckles, perfectly imperfect",
+            "smooth youthful skin texture, natural collagen glow, realistic detail",
+            "realistic skin, visible goosebumps texture, natural reaction to environment",
         ];
 
+        // === CALIDAD GENERAL (expandido) ===
         this.overall_quality = [
-            "high resolution, gallery quality",
-            "ultra high quality, professional grade",
-            "4K quality, sharp details",
-            "high definition, crisp quality",
+            "high resolution, gallery exhibition quality",
+            "ultra high quality, professional photography grade",
+            "4K resolution, razor sharp fine details",
+            "high definition, crisp and clean quality",
+            "8K masterpiece quality, every detail perfect",
+            "award-winning photography quality, exceptional",
+            "magazine cover quality, professional retouching",
+            "fine art photography quality, museum worthy",
         ];
 
+        // === FONDOS/UBICACIONES (mejorado con más atmósfera) ===
         this.backgrounds = [
-            "bedroom background", "bathroom background", "bedroom background with mirror",
-            "luxury bedroom background", "hotel room background", "modern apartment background",
-            "cozy bedroom setting", "dimly lit bedroom", "steamy bathroom, mirror foggy",
-            "shower background, water drops", "bathtub background, bubbles",
-            "walk-in closet background", "private dressing room", "penthouse suite background",
-            "jacuzzi background", "sauna room background", "gym locker room background",
-            "poolside background", "beach cabana background", "massage room background",
-            "luxury yacht cabin", "private villa background", "rooftop terrace, city lights",
-            "private studio loft", "spa room background", "boutique hotel suite",
-            "tropical resort room", "mountain cabin background", "beach house bedroom",
-            "private pool area", "wine cellar background", "art studio background",
-            "home theater room", "private library setting", "garden terrace background",
+            "cozy bedroom, rumpled sheets, warm lamp light",
+            "modern bathroom, steam on mirror, marble surfaces",
+            "bedroom with floor-to-ceiling mirror, reflections",
+            "luxury bedroom, silk sheets, designer furniture",
+            "boutique hotel room, tasteful decor, city view",
+            "modern minimalist apartment, clean lines, natural light",
+            "cozy dimly lit bedroom, fairy lights, intimate",
+            "warmly lit bedroom, candles scattered, romantic setting",
+            "steamy bathroom after shower, foggy mirror, water droplets",
+            "spacious walk-in rain shower, water cascading, steam",
+            "freestanding bathtub, bubbles, candles, relaxation",
+            "luxurious walk-in closet, designer clothes, full mirror",
+            "private dressing room, vanity mirror with lights",
+            "penthouse suite, panoramic city skyline view at night",
+            "private jacuzzi, bubbling water, warm lighting",
+            "wooden sauna room, steam, warm amber tones",
+            "gym locker room, athletic setting, harsh lighting",
+            "infinity pool edge, sunset view, resort setting",
+            "private beach cabana, sheer curtains, ocean view",
+            "spa massage room, bamboo decor, essential oil diffusers",
+            "luxury super yacht master cabin, ocean through porthole",
+            "private Mediterranean villa, terracotta and white",
+            "rooftop terrace, city lights twinkling below, night",
+            "industrial loft studio, exposed brick, large windows",
+            "zen spa room, natural wood, smooth stones, tranquility",
+            "boutique hotel suite, four-poster bed, velvet curtains",
+            "tropical resort bungalow, ocean visible, palm shadows",
+            "cozy mountain cabin, fireplace glow, wooden beams",
+            "beach house bedroom, white linens, sea breeze through curtains",
+            "private heated pool, underwater lights, twilight sky",
+            "wine cellar, dim warm lighting, stone walls",
+            "artist studio, paint splattered, creative chaos, natural light",
+            "home theater room, dim blue ambient lighting",
+            "private library, leather and wood, warm lamp light",
+            "garden terrace, fairy lights, warm summer evening",
         ];
 
+        // === ESCENARIOS ===
         this.scenarios = [
-            "morning after scene", "getting ready for night out", "after shower moment",
-            "private photoshoot", "intimate selfie", "boudoir photography session",
-            "fitness photoshoot", "swimsuit modeling", "relaxing at home", "getting undressed",
+            "morning after scene, just woke up, sheets tangled",
+            "getting ready for a night out, half-dressed",
+            "fresh out of shower moment, skin still damp",
+            "private intimate photoshoot, studio setup",
+            "intimate selfie for someone special",
+            "professional boudoir photography session",
+            "post-workout glow, athletic moment",
+            "swimsuit modeling session, confident poses",
+            "relaxing at home alone, unguarded moment",
+            "getting undressed, clothing mid-removal",
+            "trying on outfits, caught between changes",
+            "lazy weekend morning in bed, natural light",
         ];
 
+        // === ÁNGULOS DE CÁMARA ===
         this.camera_angles = [
-            "eye level angle", "low angle, looking up", "high angle, looking down",
-            "over the shoulder shot", "back view, rear angle, correct anatomy",
-            "side profile view", "three-quarter angle", "dutch angle, dynamic",
-            "close-up shot", "full body shot from below",
+            "eye level angle, natural perspective",
+            "low angle, looking up, empowering perspective",
+            "high angle, looking down, intimate vulnerability",
+            "over the shoulder shot, mysterious",
+            "back view, rear angle, correct anatomy, natural spine",
+            "side profile view, silhouette emphasis",
+            "three-quarter angle, classic flattering angle",
+            "dutch angle, dynamic energy, slight tilt",
+            "close-up shot, face and upper body detail",
+            "full body shot, head to toe composition",
+            "bird's eye view, looking straight down",
+            "worm's eye view, dramatic upward perspective",
         ];
 
+        // === TONOS DE COLOR (expandido) ===
         this.color_tones = [
-            "warm neutral tones", "warm soft tones", "cool neutral tones",
-            "warm intimate tones", "natural color palette",
+            "warm neutral tones, natural color balance",
+            "warm soft golden tones, honey-like warmth",
+            "cool desaturated tones, moody and editorial",
+            "warm intimate amber tones, romantic feeling",
+            "natural true-to-life color palette",
+            "rich deep saturated tones, vibrant and punchy",
+            "muted pastel tones, soft and dreamy",
+            "high contrast with warm shadows, dramatic",
+            "film-like color science, organic warmth",
+            "split complementary tones, visually striking",
         ];
 
+        // === TOQUES FINALES (expandido) ===
         this.final_touches = [
-            "natural imperfections, raw photography style",
-            "authentic look, unedited style",
-            "realistic photography style",
-            "natural aesthetic, raw photo",
+            "natural imperfections, raw unedited photography style",
+            "authentic genuine look, unretouched aesthetic",
+            "realistic photography style, no post-processing look",
+            "natural aesthetic, raw photo, film-like quality",
+            "subtle lens flare, adding warmth and authenticity",
+            "slight motion blur on hair, adding life and movement",
+            "natural lens vignette, drawing eye to subject",
+            "authentic grain texture, analog photography feel",
         ];
 
-        this.negative_base = "spread legs, explicit anatomy focus, low quality, blurry, bad anatomy, extra fingers, extra limbs, deformed hands, unrealistic skin, cartoon, anime, illustration, 3d render, doll face, plastic skin, watermark, text, logo, twisted torso, broken spine, impossible pose, reversed body, contorted limbs, distorted proportions, mutated anatomy, malformed body";
+        // === PROMPTS NEGATIVOS ===
+        this.negative_base = "low quality, worst quality, blurry, out of focus, bad anatomy, extra fingers, extra limbs, missing fingers, deformed hands, unrealistic proportions, cartoon, anime, illustration, 3d render, CGI, doll face, plastic skin, uncanny valley, watermark, text, logo, signature, twisted torso, broken spine, impossible pose, reversed body, contorted limbs, distorted proportions, mutated anatomy, malformed body, duplicate, clone, extra body parts";
 
         this.negative_extras = [
-            "fake breasts, implants, artificial look, over-edited",
-            "deformed body, mutated, disfigured, bad proportions",
-            "painting, drawing, sketch, CGI, over-processed",
-            "ugly face, distorted features, bad eyes",
+            "fake breasts, implants, artificial look, over-edited, overprocessed, airbrushed, plastic surgery",
+            "deformed body, mutated, disfigured, bad proportions, asymmetric face, misshapen body",
+            "painting, drawing, sketch, CGI, over-processed, digital art, render, illustration style",
+            "ugly face, distorted features, bad eyes, cross-eyed, lazy eye, wrong eye direction",
+            "bad hands, wrong number of fingers, fused fingers, extra thumbs, claw hands",
+            "unnatural skin color, grey skin, green tint, oversaturated skin, dead skin color",
+            "bad lighting, flat lighting, no shadows, over-exposed, under-exposed, blown highlights",
+            "cropped awkwardly, bad framing, cut off limbs, missing feet, head cropped",
         ];
+
+        // === SISTEMA DE VOTOS ===
+        this._loadVoteData();
+    }
+
+    // --- Carga datos de votos desde localStorage ---
+    _loadVoteData() {
+        try {
+            this.voteData = JSON.parse(localStorage.getItem('promptVoteData') || '{}');
+        } catch {
+            this.voteData = {};
+        }
+    }
+
+    _saveVoteData() {
+        try {
+            localStorage.setItem('promptVoteData', JSON.stringify(this.voteData));
+        } catch (e) {
+            console.warn('Could not save vote data:', e);
+        }
+    }
+
+    // --- Registra un voto para un prompt ---
+    registerVote(promptText, voteType) {
+        const elements = this._extractElements(promptText);
+        elements.forEach(el => {
+            if (!this.voteData[el]) {
+                this.voteData[el] = { up: 0, down: 0 };
+            }
+            this.voteData[el][voteType]++;
+        });
+        this._saveVoteData();
+    }
+
+    // --- Extrae elementos identificables del prompt ---
+    _extractElements(text) {
+        const elements = [];
+        const allArrays = {
+            person_base: this.person_base,
+            hair_styles: this.hair_styles,
+            skin_tones: this.skin_tones,
+            eye_details: this.eye_details,
+            makeup_styles: this.makeup_styles,
+            body_modifiers_nude: this.body_modifiers_nude,
+            poses_nude: this.poses_nude,
+            poses_level5: this.poses_level5,
+            facial_expressions: this.facial_expressions,
+            lighting: this.lighting,
+            lighting_level5: this.lighting_level5,
+            backgrounds: this.backgrounds,
+            photo_types: this.photo_types,
+            style_modifiers: this.style_modifiers,
+            atmosphere_details: this.atmosphere_details,
+            color_tones: this.color_tones,
+            body_mods_level5: this.body_mods_level5,
+            expressions_level5: this.expressions_level5,
+        };
+
+        const lowerText = text.toLowerCase();
+        for (const [arrayName, arr] of Object.entries(allArrays)) {
+            for (const item of arr) {
+                const itemWords = item.toLowerCase().split(/[\s,]+/).filter(w => w.length > 3);
+                const matchCount = itemWords.filter(w => lowerText.includes(w)).length;
+                if (itemWords.length > 0 && matchCount / itemWords.length > 0.6) {
+                    elements.push(`${arrayName}::${item}`);
+                }
+            }
+        }
+        return elements;
+    }
+
+    // --- Obtiene estadísticas de votos ---
+    getVoteStats() {
+        const stats = { totalVotes: 0, preferences: [], avoided: [] };
+        for (const [key, data] of Object.entries(this.voteData)) {
+            const score = (data.up || 0) - (data.down || 0);
+            const total = (data.up || 0) + (data.down || 0);
+            stats.totalVotes += total;
+            if (score > 0) stats.preferences.push({ element: key.split('::')[1] || key, score, votes: total });
+            if (score < 0) stats.avoided.push({ element: key.split('::')[1] || key, score, votes: total });
+        }
+        stats.preferences.sort((a, b) => b.score - a.score);
+        stats.avoided.sort((a, b) => a.score - b.score);
+        return stats;
+    }
+
+    clearVoteData() {
+        this.voteData = {};
+        this._saveVoteData();
+    }
+
+    // --- Selección aleatoria con pesos basados en votos ---
+    _smartChoice(arr, arrayName) {
+        if (!this.voteData || Object.keys(this.voteData).length === 0) {
+            return this._randomChoice(arr);
+        }
+
+        const weights = arr.map(item => {
+            const key = `${arrayName}::${item}`;
+            const data = this.voteData[key];
+            if (!data) return 1.0;
+            const score = (data.up || 0) - (data.down || 0);
+            return Math.max(0.1, 1.0 + score * 0.4);
+        });
+
+        const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+        let random = Math.random() * totalWeight;
+        for (let i = 0; i < arr.length; i++) {
+            random -= weights[i];
+            if (random <= 0) return arr[i];
+        }
+        return arr[arr.length - 1];
     }
 
     _randomChoice(arr) {
@@ -350,6 +770,29 @@ class PromptGenerator {
 
     _randomFloat() {
         return Math.random();
+    }
+
+    // --- Construye descripción completa de persona ---
+    _buildPersonDescription(level = 0) {
+        const parts = [];
+        parts.push(this._smartChoice(this.person_base, 'person_base'));
+        parts.push(this._smartChoice(this.hair_styles, 'hair_styles'));
+
+        if (level >= 2) {
+            parts.push(this._smartChoice(this.skin_tones, 'skin_tones'));
+        }
+
+        if (level >= 3 || (level === 0 && this._randomFloat() > 0.5)) {
+            parts.push(this._smartChoice(this.eye_details, 'eye_details'));
+        }
+
+        if (level >= 2 && this._randomFloat() > 0.4) {
+            parts.push(this._smartChoice(this.makeup_styles, 'makeup_styles'));
+        } else if (level === 0 && this._randomFloat() > 0.6) {
+            parts.push(this._smartChoice(this.makeup_styles, 'makeup_styles'));
+        }
+
+        return parts.join(", ");
     }
 
     generatePrompt(options = {}) {
@@ -369,78 +812,85 @@ class PromptGenerator {
 
         if (!clothed) {
             // SIN ROPA
-            const conditionValues = Object.values(this.conditions);
-            const condition = wet ? "wet" : this._randomChoice(conditionValues);
+            const conditionValues = Object.values(this.conditions).filter(v => v);
+            const condition = wet ? "wet" : (this._randomFloat() > 0.5 ? this._randomChoice(conditionValues) : "");
+            const personDesc = this._buildPersonDescription(0);
             if (condition) {
-                prompt_parts.push(`nude of a ${condition} ${this._randomChoice(this.person_base)}`);
+                prompt_parts.push(`nude of a ${condition} ${personDesc}`);
             } else {
-                prompt_parts.push(`nude of a ${this._randomChoice(this.person_base)}`);
+                prompt_parts.push(`nude of a ${personDesc}`);
             }
 
-            prompt_parts.push(this._randomChoice(this.photo_types));
+            prompt_parts.push(this._smartChoice(this.photo_types, 'photo_types'));
 
             // Escenario
             const scenario_option = custom_options.scenario;
             if (scenario_option && scenario_option !== 'random') {
                 const scenario_map = {
-                    morning_after: 'morning after scene',
-                    getting_ready: 'getting ready for night out',
-                    after_shower: 'after shower moment',
-                    photoshoot: 'private photoshoot',
-                    boudoir: 'boudoir photography session',
-                    intimate_selfie: 'intimate selfie',
-                    getting_undressed: 'getting undressed',
+                    morning_after: 'morning after scene, just woke up',
+                    getting_ready: 'getting ready for night out, half-dressed',
+                    after_shower: 'fresh out of shower, skin damp',
+                    photoshoot: 'private intimate photoshoot',
+                    boudoir: 'professional boudoir photography session',
+                    intimate_selfie: 'intimate selfie for someone special',
+                    getting_undressed: 'getting undressed, clothing mid-removal',
                 };
-                prompt_parts.push(scenario_map[scenario_option] || this._randomChoice(this.scenarios));
+                prompt_parts.push(scenario_map[scenario_option] || this._smartChoice(this.scenarios, 'scenarios'));
             } else if (randomize && this._randomFloat() > 0.5) {
-                prompt_parts.push(this._randomChoice(this.scenarios));
+                prompt_parts.push(this._smartChoice(this.scenarios, 'scenarios'));
             }
 
-            prompt_parts.push(this._randomChoice(this.lighting));
-            prompt_parts.push(this._randomChoice(this.body_modifiers_nude));
+            prompt_parts.push(this._smartChoice(this.lighting, 'lighting'));
+            prompt_parts.push(this._smartChoice(this.body_modifiers_nude, 'body_modifiers_nude'));
 
             // Expresión facial
             const facial_option = custom_options.facial_expression;
             if (facial_option && facial_option !== 'random') {
                 const facial_map = {
-                    seductive_gaze: 'seductive gaze', lustful_eyes: 'lustful eyes',
-                    playful_smile: 'playful smile', biting_lip: 'biting lip',
-                    mouth_open: 'mouth slightly open', intense_contact: 'intense eye contact',
-                    bedroom_eyes: 'bedroom eyes',
+                    seductive_gaze: 'seductive gaze, knowing half-smile',
+                    lustful_eyes: 'lustful eyes, parted lips',
+                    playful_smile: 'playful smile, mischievous eyes',
+                    biting_lip: 'biting lower lip, intense stare',
+                    mouth_open: 'mouth slightly open, breathless',
+                    intense_contact: 'intense eye contact, burning gaze',
+                    bedroom_eyes: 'bedroom eyes, soft lazy smile',
                 };
-                prompt_parts.push(facial_map[facial_option] || this._randomChoice(this.facial_expressions));
+                prompt_parts.push(facial_map[facial_option] || this._smartChoice(this.facial_expressions, 'facial_expressions'));
             } else if (randomize && this._randomFloat() > 0.3) {
-                prompt_parts.push(this._randomChoice(this.facial_expressions));
+                prompt_parts.push(this._smartChoice(this.facial_expressions, 'facial_expressions'));
             }
 
-            prompt_parts.push(this._randomChoice(this.poses_nude));
+            prompt_parts.push(this._smartChoice(this.poses_nude, 'poses_nude'));
 
             // Ángulo
             const angle_option = custom_options.camera_angle;
             if (angle_option && angle_option !== 'random') {
                 const angle_map = {
-                    eye_level: 'eye level angle', low_angle: 'low angle, looking up',
-                    high_angle: 'high angle, looking down', over_shoulder: 'over the shoulder shot',
+                    eye_level: 'eye level angle, natural perspective',
+                    low_angle: 'low angle, looking up, empowering',
+                    high_angle: 'high angle, looking down, intimate',
+                    over_shoulder: 'over the shoulder shot, mysterious',
                     from_behind: 'back view, rear angle, correct anatomy, natural spine position',
-                    side_profile: 'side profile view', close_up: 'close-up shot',
-                    full_body: 'full body shot from below',
+                    side_profile: 'side profile view, silhouette emphasis',
+                    close_up: 'close-up shot, face and upper body',
+                    full_body: 'full body shot, head to toe',
                 };
-                prompt_parts.push(angle_map[angle_option] || this._randomChoice(this.camera_angles));
+                prompt_parts.push(angle_map[angle_option] || this._smartChoice(this.camera_angles, 'camera_angles'));
             } else if (randomize && this._randomFloat() > 0.6) {
-                prompt_parts.push(this._randomChoice(this.camera_angles));
+                prompt_parts.push(this._smartChoice(this.camera_angles, 'camera_angles'));
             }
 
-            prompt_parts.push(this._randomChoice(this.technical_composition));
-            prompt_parts.push(this._randomChoice(this.texture_quality));
-            prompt_parts.push(this._randomChoice(this.overall_quality));
+            prompt_parts.push(this._smartChoice(this.technical_composition, 'technical_composition'));
+            prompt_parts.push(this._smartChoice(this.texture_quality, 'texture_quality'));
+            prompt_parts.push(this._smartChoice(this.overall_quality, 'overall_quality'));
 
             // Background
             const location_option = custom_options.location;
             if (location_option && location_option !== 'random') {
                 const location_map = this._getLocationMap();
-                prompt_parts.push(location_map[location_option] || this._randomChoice(this.backgrounds));
+                prompt_parts.push(location_map[location_option] || this._smartChoice(this.backgrounds, 'backgrounds'));
             } else {
-                prompt_parts.push(this._randomChoice(this.backgrounds));
+                prompt_parts.push(this._smartChoice(this.backgrounds, 'backgrounds'));
             }
 
             // Ropa/cobertura
@@ -450,56 +900,68 @@ class PromptGenerator {
                 prompt_parts.push(this.clothing[clothing_choice]);
             }
 
-            prompt_parts.push(this._randomChoice(this.color_tones));
-            prompt_parts.push(this._randomChoice(this.final_touches));
-        } else {
-            // CON ROPA
-            const condition = wet ? "wet" : "";
-            if (condition) {
-                prompt_parts.push(`${condition} ${this._randomChoice(this.person_base)}`);
-            } else {
-                prompt_parts.push(this._randomChoice(this.person_base));
+            // Estilo fotográfico y atmósfera
+            if (this._randomFloat() > 0.4) {
+                prompt_parts.push(this._smartChoice(this.style_modifiers, 'style_modifiers'));
+            }
+            if (this._randomFloat() > 0.5) {
+                prompt_parts.push(this._smartChoice(this.atmosphere_details, 'atmosphere_details'));
             }
 
-            prompt_parts.push(this._randomChoice(this.clothing_full));
-            prompt_parts.push(this._randomChoice(this.photo_types));
+            prompt_parts.push(this._smartChoice(this.color_tones, 'color_tones'));
+            prompt_parts.push(this._smartChoice(this.final_touches, 'final_touches'));
+        } else {
+            // CON ROPA
+            const condition = wet ? "wet, water droplets on skin" : "";
+            const personDesc = this._buildPersonDescription(0);
+            if (condition) {
+                prompt_parts.push(`${condition} ${personDesc}`);
+            } else {
+                prompt_parts.push(personDesc);
+            }
+
+            prompt_parts.push(this._smartChoice(this.clothing_full, 'clothing_full'));
+            prompt_parts.push(this._smartChoice(this.photo_types, 'photo_types'));
 
             // Escenario
             const scenario_option = custom_options.scenario;
             if (scenario_option && scenario_option !== 'random') {
                 const scenario_map = {
-                    morning_after: 'morning after scene',
-                    getting_ready: 'getting ready for night out',
-                    after_shower: 'after shower moment',
-                    photoshoot: 'private photoshoot',
-                    boudoir: 'boudoir photography session',
-                    intimate_selfie: 'intimate selfie',
-                    getting_undressed: 'getting undressed',
+                    morning_after: 'morning after scene, just woke up',
+                    getting_ready: 'getting ready for night out, half-dressed',
+                    after_shower: 'fresh out of shower, skin damp',
+                    photoshoot: 'private intimate photoshoot',
+                    boudoir: 'professional boudoir photography session',
+                    intimate_selfie: 'intimate selfie for someone special',
+                    getting_undressed: 'getting undressed, clothing mid-removal',
                 };
-                prompt_parts.push(scenario_map[scenario_option] || this._randomChoice(this.scenarios));
+                prompt_parts.push(scenario_map[scenario_option] || this._smartChoice(this.scenarios, 'scenarios'));
             } else if (randomize && this._randomFloat() > 0.5) {
-                prompt_parts.push(this._randomChoice(this.scenarios));
+                prompt_parts.push(this._smartChoice(this.scenarios, 'scenarios'));
             }
 
-            prompt_parts.push(this._randomChoice(this.lighting));
+            prompt_parts.push(this._smartChoice(this.lighting, 'lighting'));
 
             // Expresión facial
             const facial_option = custom_options.facial_expression;
             if (facial_option && facial_option !== 'random') {
                 const facial_map = {
-                    seductive_gaze: 'seductive gaze', lustful_eyes: 'lustful eyes',
-                    playful_smile: 'playful smile', biting_lip: 'biting lip',
-                    mouth_open: 'mouth slightly open', intense_contact: 'intense eye contact',
-                    bedroom_eyes: 'bedroom eyes',
+                    seductive_gaze: 'seductive gaze, knowing half-smile',
+                    lustful_eyes: 'lustful eyes, parted lips',
+                    playful_smile: 'playful smile, mischievous eyes',
+                    biting_lip: 'biting lower lip, intense stare',
+                    mouth_open: 'mouth slightly open, breathless',
+                    intense_contact: 'intense eye contact, burning gaze',
+                    bedroom_eyes: 'bedroom eyes, soft lazy smile',
                 };
-                prompt_parts.push(facial_map[facial_option] || this._randomChoice(this.facial_expressions));
+                prompt_parts.push(facial_map[facial_option] || this._smartChoice(this.facial_expressions, 'facial_expressions'));
             } else if (randomize && this._randomFloat() > 0.4) {
-                prompt_parts.push(this._randomChoice(this.facial_expressions));
+                prompt_parts.push(this._smartChoice(this.facial_expressions, 'facial_expressions'));
             }
 
             // Pose suave
             if (randomize && this._randomFloat() > 0.7) {
-                const soft_poses = ["confident pose", "casual pose", "relaxed pose", "playful pose", "flirty pose"];
+                const soft_poses = ["confident power pose", "casual relaxed pose", "playful pose, mid-laugh", "flirty pose, hip cocked"];
                 prompt_parts.push(this._randomChoice(soft_poses));
             }
 
@@ -507,32 +969,45 @@ class PromptGenerator {
             const angle_option = custom_options.camera_angle;
             if (angle_option && angle_option !== 'random') {
                 const angle_map = {
-                    eye_level: 'eye level angle', low_angle: 'low angle, looking up',
-                    high_angle: 'high angle, looking down', over_shoulder: 'over the shoulder shot',
+                    eye_level: 'eye level angle, natural perspective',
+                    low_angle: 'low angle, looking up, empowering',
+                    high_angle: 'high angle, looking down, intimate',
+                    over_shoulder: 'over the shoulder shot, mysterious',
                     from_behind: 'back view, rear angle, correct anatomy, natural spine position',
-                    side_profile: 'side profile view', close_up: 'close-up shot',
-                    full_body: 'full body shot from below',
+                    side_profile: 'side profile view, silhouette emphasis',
+                    close_up: 'close-up shot, face and upper body',
+                    full_body: 'full body shot, head to toe',
                 };
-                prompt_parts.push(angle_map[angle_option] || this._randomChoice(this.camera_angles));
+                prompt_parts.push(angle_map[angle_option] || this._smartChoice(this.camera_angles, 'camera_angles'));
             } else if (randomize && this._randomFloat() > 0.6) {
-                prompt_parts.push(this._randomChoice(this.camera_angles));
+                prompt_parts.push(this._smartChoice(this.camera_angles, 'camera_angles'));
             }
 
-            prompt_parts.push(this._randomChoice(this.technical_composition));
-            prompt_parts.push(this._randomChoice(this.texture_quality));
-            prompt_parts.push(this._randomChoice(this.overall_quality));
+            prompt_parts.push(this._smartChoice(this.technical_composition, 'technical_composition'));
+            prompt_parts.push(this._smartChoice(this.texture_quality, 'texture_quality'));
+            prompt_parts.push(this._smartChoice(this.overall_quality, 'overall_quality'));
 
             // Background
             const location_option = custom_options.location;
             if (location_option && location_option !== 'random') {
                 const location_map = this._getLocationMap();
-                prompt_parts.push(location_map[location_option] || this._randomChoice(this.backgrounds));
+                prompt_parts.push(location_map[location_option] || this._smartChoice(this.backgrounds, 'backgrounds'));
             } else {
-                prompt_parts.push(this._randomChoice(this.backgrounds));
+                prompt_parts.push(this._smartChoice(this.backgrounds, 'backgrounds'));
             }
 
-            prompt_parts.push(this._randomChoice(this.color_tones));
-            prompt_parts.push(this._randomChoice(this.final_touches));
+            // Accesorios (sometimes)
+            if (this._randomFloat() > 0.6) {
+                prompt_parts.push(this._smartChoice(this.accessories, 'accessories'));
+            }
+
+            // Estilo fotográfico
+            if (this._randomFloat() > 0.4) {
+                prompt_parts.push(this._smartChoice(this.style_modifiers, 'style_modifiers'));
+            }
+
+            prompt_parts.push(this._smartChoice(this.color_tones, 'color_tones'));
+            prompt_parts.push(this._smartChoice(this.final_touches, 'final_touches'));
         }
 
         const positive_prompt = prompt_parts.join(", ");
@@ -562,96 +1037,119 @@ class PromptGenerator {
 
     _generateByLevel(level, custom_options, randomize) {
         const prompt_parts = [];
-        prompt_parts.push(this._randomChoice(this.person_base));
+        const personDesc = this._buildPersonDescription(level);
 
         // NIVEL 1: Casual
         if (level === 1) {
-            prompt_parts.push(this._randomChoice(this.clothing_level1));
-            prompt_parts.push(this._randomChoice(this.photo_types));
-            prompt_parts.push(this._randomChoice(this.scenarios_level1));
-            prompt_parts.push(this._randomChoice(this.poses_level1));
-            prompt_parts.push("natural lighting, soft daylight");
-            const bg_casual = ["living room background", "home interior", "park background", "casual setting"];
+            prompt_parts.push(personDesc);
+            prompt_parts.push(this._smartChoice(this.clothing_level1, 'clothing_level1'));
+            prompt_parts.push(this._smartChoice(this.photo_types, 'photo_types'));
+            prompt_parts.push(this._smartChoice(this.scenarios_level1, 'scenarios_level1'));
+            prompt_parts.push(this._smartChoice(this.poses_level1, 'poses_level1'));
+            prompt_parts.push("natural lighting, soft warm daylight");
+            const bg_casual = ["cozy living room, warm tones", "home interior, natural light", "green park, autumn colors", "casual café setting, warm ambient"];
             prompt_parts.push(this._randomChoice(bg_casual));
+            if (this._randomFloat() > 0.5) {
+                prompt_parts.push(this._smartChoice(this.accessories, 'accessories'));
+            }
         }
 
         // NIVEL 2: Sugerente
         else if (level === 2) {
-            prompt_parts.push(this._randomChoice(this.clothing_level2));
-            prompt_parts.push(this._randomChoice(this.photo_types));
-            prompt_parts.push(this._randomChoice(this.poses_level2));
-            prompt_parts.push(this._randomChoice(this.lighting));
-            if (randomize && this._randomFloat() > 0.5) {
-                prompt_parts.push(this._randomChoice(this.facial_expressions.slice(0, 5)));
+            prompt_parts.push(personDesc);
+            prompt_parts.push(this._smartChoice(this.clothing_level2, 'clothing_level2'));
+            prompt_parts.push(this._smartChoice(this.photo_types, 'photo_types'));
+            prompt_parts.push(this._smartChoice(this.poses_level2, 'poses_level2'));
+            prompt_parts.push(this._smartChoice(this.lighting, 'lighting'));
+            if (randomize && this._randomFloat() > 0.3) {
+                prompt_parts.push(this._smartChoice(this.facial_expressions, 'facial_expressions'));
             }
-            prompt_parts.push(this._randomChoice(this.backgrounds));
+            prompt_parts.push(this._smartChoice(this.backgrounds, 'backgrounds'));
+            if (this._randomFloat() > 0.5) {
+                prompt_parts.push(this._smartChoice(this.accessories, 'accessories'));
+            }
         }
 
         // NIVEL 3: Provocativo
         else if (level === 3) {
-            prompt_parts.push(this._randomChoice(this.clothing_level3));
-            prompt_parts.push(this._randomChoice(this.photo_types));
-            prompt_parts.push(this._randomChoice(this.poses_level3));
-            prompt_parts.push(this._randomChoice(this.lighting));
-            if (randomize && this._randomFloat() > 0.3) {
-                prompt_parts.push(this._randomChoice(this.facial_expressions));
+            prompt_parts.push(personDesc);
+            prompt_parts.push(this._smartChoice(this.clothing_level3, 'clothing_level3'));
+            prompt_parts.push(this._smartChoice(this.photo_types, 'photo_types'));
+            prompt_parts.push(this._smartChoice(this.poses_level3, 'poses_level3'));
+            prompt_parts.push(this._smartChoice(this.lighting, 'lighting'));
+            if (randomize && this._randomFloat() > 0.2) {
+                prompt_parts.push(this._smartChoice(this.facial_expressions, 'facial_expressions'));
             }
-            prompt_parts.push(this._randomChoice(this.backgrounds));
+            prompt_parts.push(this._smartChoice(this.backgrounds, 'backgrounds'));
+            if (this._randomFloat() > 0.5) {
+                prompt_parts.push(this._smartChoice(this.atmosphere_details, 'atmosphere_details'));
+            }
         }
 
         // NIVEL 4: Sensual
         else if (level === 4) {
-            prompt_parts[0] = `nude of a ${prompt_parts[0]}`;
+            prompt_parts.push(`nude of a ${personDesc}`);
             const clothing_opt = custom_options.clothing;
             if (clothing_opt && clothing_opt !== 'random' && this.clothing[clothing_opt]) {
                 prompt_parts.push(this.clothing[clothing_opt]);
             } else {
-                prompt_parts.push(this._randomChoice(this.clothing_level4));
+                prompt_parts.push(this._smartChoice(this.clothing_level4, 'clothing_level4'));
             }
-            prompt_parts.push(this._randomChoice(this.photo_types));
-            prompt_parts.push(this._randomChoice(this.body_modifiers_nude));
-            prompt_parts.push(this._randomChoice(this.poses_level4));
+            prompt_parts.push(this._smartChoice(this.photo_types, 'photo_types'));
+            prompt_parts.push(this._smartChoice(this.body_modifiers_nude, 'body_modifiers_nude'));
+            prompt_parts.push(this._smartChoice(this.poses_level4, 'poses_level4'));
             if (randomize && this._randomFloat() > 0.2) {
-                prompt_parts.push(this._randomChoice(this.facial_expressions));
+                prompt_parts.push(this._smartChoice(this.facial_expressions, 'facial_expressions'));
             }
-            prompt_parts.push(this._randomChoice(this.lighting));
-            prompt_parts.push(this._randomChoice(this.backgrounds));
+            prompt_parts.push(this._smartChoice(this.lighting, 'lighting'));
+            prompt_parts.push(this._smartChoice(this.backgrounds, 'backgrounds'));
+            if (this._randomFloat() > 0.4) {
+                prompt_parts.push(this._smartChoice(this.atmosphere_details, 'atmosphere_details'));
+            }
         }
 
         // NIVEL 5: Explícito
         else if (level === 5) {
-            prompt_parts[0] = `nude of a ${prompt_parts[0]}`;
-            prompt_parts.push("completely nude, naked, no clothing");
-            prompt_parts.push(this._randomChoice(this.body_mods_level5));
-            prompt_parts.push(this._randomChoice(this.poses_level5));
-            prompt_parts.push(this._randomChoice(this.scenarios_level5));
-            prompt_parts.push(this._randomChoice(this.expressions_level5));
-            prompt_parts.push(this._randomChoice(this.lighting_level5));
-            prompt_parts.push(this._randomChoice(this.camera_level5));
+            prompt_parts.push(`nude of a ${personDesc}`);
+            prompt_parts.push("completely nude, naked, no clothing, fully exposed");
+            prompt_parts.push(this._smartChoice(this.body_mods_level5, 'body_mods_level5'));
+            prompt_parts.push(this._smartChoice(this.poses_level5, 'poses_level5'));
+            prompt_parts.push(this._smartChoice(this.scenarios_level5, 'scenarios_level5'));
+            prompt_parts.push(this._smartChoice(this.expressions_level5, 'expressions_level5'));
+            prompt_parts.push(this._smartChoice(this.lighting_level5, 'lighting_level5'));
+            prompt_parts.push(this._smartChoice(this.camera_level5, 'camera_level5'));
 
             const bg_explicit = [
-                "luxury bedroom, silk sheets, dim lighting",
-                "hotel suite bedroom, king bed, warm ambient light",
-                "minimalist bedroom, white sheets, natural light",
-                "dark bedroom, moody atmosphere, single lamp",
-                "professional photography studio, dark backdrop",
+                "luxury bedroom, silk satin sheets, dim warm lighting, candles",
+                "boutique hotel suite bedroom, king bed, warm ambient golden light",
+                "minimalist modern bedroom, crisp white sheets, natural morning light",
+                "dark moody bedroom, deep atmosphere, single warm lamp, shadows",
+                "professional photography studio, dark seamless backdrop, controlled lighting",
+                "penthouse bedroom, city skyline through floor-to-ceiling windows, night",
+                "rustic cabin bedroom, fireplace glow, fur throws, intimate",
             ];
             prompt_parts.push(this._randomChoice(bg_explicit));
 
-            prompt_parts.push("ultra realistic skin texture, natural skin with subtle details, photorealistic");
-            prompt_parts.push("8K, ultra detailed, masterpiece quality, professional photography");
-            prompt_parts.push(this._randomChoice(this.color_tones));
-            prompt_parts.push("raw photo, unedited look, authentic");
+            prompt_parts.push("ultra realistic skin texture, natural skin with subtle pores and imperfections, subsurface scattering, photorealistic");
+            prompt_parts.push("8K, ultra detailed, masterpiece quality, award-winning professional photography");
+            prompt_parts.push(this._smartChoice(this.color_tones, 'color_tones'));
+            prompt_parts.push("raw photo, unedited authentic look, genuine moment");
+
+            // Style modifier for level 5
+            prompt_parts.push(this._smartChoice(this.style_modifiers, 'style_modifiers'));
 
             // Ángulo personalizado
             const angle_opt = custom_options.camera_angle;
             if (angle_opt && angle_opt !== 'random') {
                 const angle_map = {
-                    eye_level: 'eye level angle', low_angle: 'low angle, looking up',
-                    high_angle: 'high angle, looking down', over_shoulder: 'over the shoulder shot',
-                    from_behind: 'back view, rear angle, correct anatomy, natural spine position, anatomically accurate',
-                    side_profile: 'side profile view', close_up: 'close-up shot',
-                    full_body: 'full body shot from below',
+                    eye_level: 'eye level angle, natural direct perspective',
+                    low_angle: 'low angle, looking up, powerful perspective',
+                    high_angle: 'high angle, looking down, dominant view',
+                    over_shoulder: 'over the shoulder shot, intimate peering',
+                    from_behind: 'back view, rear angle, correct anatomy, natural spine, anatomically accurate rear',
+                    side_profile: 'side profile view, body contour visible',
+                    close_up: 'close-up shot, intimate detail',
+                    full_body: 'full body shot from below, dramatic',
                 };
                 prompt_parts.push(angle_map[angle_opt] || '');
             }
@@ -662,7 +1160,7 @@ class PromptGenerator {
                 const location_map = this._getLocationMap();
                 const filtered = prompt_parts.filter(p => !p.toLowerCase().includes('bedroom') || p.toLowerCase().includes('nude'));
                 filtered.push(location_map[loc_opt] || '');
-                
+
                 const positive_prompt = filtered.filter(p => p).join(", ");
 
                 let negative_prompt = this.negative_base;
@@ -670,7 +1168,7 @@ class PromptGenerator {
                 negative_prompt += ", extra arms, extra legs, fused limbs, missing limbs";
                 negative_prompt += ", distorted face, cross-eyed, bad eyes, ugly face";
                 negative_prompt += ", bad hands, deformed fingers, fused fingers, too many fingers";
-                negative_prompt += ", clothing, dressed, fabric, textile";
+                negative_prompt += ", clothing, dressed, fabric, textile, covered";
                 if (custom_options.camera_angle === 'from_behind') {
                     negative_prompt += ", front-facing features on back view, face visible from behind, twisted body, unnatural rotation, impossible spine";
                 }
@@ -696,7 +1194,7 @@ class PromptGenerator {
             negative_prompt += ", extra arms, extra legs, fused limbs, missing limbs";
             negative_prompt += ", distorted face, cross-eyed, bad eyes, ugly face";
             negative_prompt += ", bad hands, deformed fingers, fused fingers, too many fingers";
-            negative_prompt += ", clothing, dressed, fabric, textile";
+            negative_prompt += ", clothing, dressed, fabric, textile, covered";
             if (custom_options.camera_angle === 'from_behind') {
                 negative_prompt += ", front-facing features on back view, face visible from behind, twisted body, unnatural rotation, impossible spine";
             }
@@ -719,29 +1217,37 @@ class PromptGenerator {
         const angle_opt = custom_options.camera_angle;
         if (angle_opt && angle_opt !== 'random') {
             const angle_map = {
-                eye_level: 'eye level angle', low_angle: 'low angle, looking up',
-                high_angle: 'high angle, looking down', over_shoulder: 'over the shoulder shot',
+                eye_level: 'eye level angle, natural perspective',
+                low_angle: 'low angle, looking up, empowering',
+                high_angle: 'high angle, looking down, intimate',
+                over_shoulder: 'over the shoulder shot, mysterious',
                 from_behind: 'back view, rear angle, correct anatomy, natural spine position',
-                side_profile: 'side profile view', close_up: 'close-up shot',
-                full_body: 'full body shot from below',
+                side_profile: 'side profile view, silhouette emphasis',
+                close_up: 'close-up shot, face and upper body',
+                full_body: 'full body shot, head to toe',
             };
-            prompt_parts.push(angle_map[angle_opt] || this._randomChoice(this.camera_angles));
+            prompt_parts.push(angle_map[angle_opt] || this._smartChoice(this.camera_angles, 'camera_angles'));
         }
 
         const loc_opt = custom_options.location;
         if (loc_opt && loc_opt !== 'random') {
             const location_map = this._getLocationMap();
             const filtered = prompt_parts.filter(p => !p.toLowerCase().includes('background') && !p.toLowerCase().includes('setting'));
-            filtered.push(location_map[loc_opt] || this._randomChoice(this.backgrounds));
+            filtered.push(location_map[loc_opt] || this._smartChoice(this.backgrounds, 'backgrounds'));
             prompt_parts.length = 0;
             filtered.forEach(p => prompt_parts.push(p));
         }
 
-        if (level >= 2) prompt_parts.push(this._randomChoice(this.technical_composition));
-        if (level >= 3) prompt_parts.push(this._randomChoice(this.texture_quality));
-        prompt_parts.push(this._randomChoice(this.overall_quality));
-        prompt_parts.push(this._randomChoice(this.color_tones));
-        if (level >= 3) prompt_parts.push(this._randomChoice(this.final_touches));
+        if (level >= 2) prompt_parts.push(this._smartChoice(this.technical_composition, 'technical_composition'));
+        if (level >= 3) prompt_parts.push(this._smartChoice(this.texture_quality, 'texture_quality'));
+        prompt_parts.push(this._smartChoice(this.overall_quality, 'overall_quality'));
+        prompt_parts.push(this._smartChoice(this.color_tones, 'color_tones'));
+        if (level >= 3) prompt_parts.push(this._smartChoice(this.final_touches, 'final_touches'));
+
+        // Add style modifier for levels 2+
+        if (level >= 2 && this._randomFloat() > 0.4) {
+            prompt_parts.push(this._smartChoice(this.style_modifiers, 'style_modifiers'));
+        }
 
         const positive_prompt = prompt_parts.join(", ");
 
@@ -773,20 +1279,20 @@ class PromptGenerator {
 
     _getLocationMap() {
         return {
-            bedroom: 'bedroom background',
-            bathroom: 'bathroom background',
-            luxury_bedroom: 'luxury bedroom background',
-            hotel_room: 'hotel room background',
-            jacuzzi: 'jacuzzi background',
-            sauna: 'sauna room background',
-            poolside: 'poolside background',
-            beach_cabana: 'beach cabana background',
-            yacht: 'luxury yacht cabin',
-            villa: 'private villa background',
-            rooftop: 'rooftop terrace, city lights',
-            spa: 'spa room background',
-            resort: 'tropical resort room',
-            beach_house: 'beach house bedroom',
+            bedroom: 'cozy bedroom, warm lamp light',
+            bathroom: 'modern bathroom, marble surfaces, steam',
+            luxury_bedroom: 'luxury bedroom, silk sheets, designer decor',
+            hotel_room: 'boutique hotel room, tasteful decor, city view',
+            jacuzzi: 'private jacuzzi, bubbling water, warm lighting',
+            sauna: 'wooden sauna room, steam, amber tones',
+            poolside: 'infinity pool edge, sunset, resort setting',
+            beach_cabana: 'private beach cabana, sheer curtains, ocean',
+            yacht: 'luxury yacht master cabin, ocean through porthole',
+            villa: 'private Mediterranean villa, terracotta walls',
+            rooftop: 'rooftop terrace, city lights twinkling, night sky',
+            spa: 'zen spa room, natural wood, candles, tranquility',
+            resort: 'tropical resort bungalow, ocean view, palms',
+            beach_house: 'beach house bedroom, white linens, sea breeze',
         };
     }
 

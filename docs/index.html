@@ -197,6 +197,54 @@
             font-size: 0.85em; max-height: 200px; overflow-y: auto;
             word-wrap: break-word; overflow-wrap: break-word; white-space: pre-wrap;
         }
+
+        /* === SISTEMA DE VOTOS === */
+        .vote-buttons {
+            display: flex; gap: 8px; margin-top: 12px; padding-top: 10px;
+            border-top: 1px solid #e5e7eb;
+        }
+        .vote-btn {
+            padding: 8px 18px; border: 2px solid #e5e7eb; border-radius: 8px;
+            background: white; cursor: pointer; font-size: 1.05em;
+            transition: all 0.3s ease; display: flex; align-items: center; gap: 6px;
+            user-select: none;
+        }
+        .vote-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+        .vote-btn.vote-up:hover, .vote-btn.vote-up.voted {
+            border-color: #10b981; background: #ecfdf5; color: #059669;
+        }
+        .vote-btn.vote-down:hover, .vote-btn.vote-down.voted {
+            border-color: #ef4444; background: #fef2f2; color: #dc2626;
+        }
+        .vote-btn.voted { font-weight: 700; transform: scale(1.05); }
+        .vote-btn .vote-label { font-size: 0.85em; font-weight: 600; }
+        .vote-info {
+            font-size: 0.75em; color: #9ca3af; margin-top: 4px; font-style: italic;
+        }
+
+        .vote-stats-panel {
+            margin-top: 15px; padding: 12px; background: #f0fdf4;
+            border-radius: 8px; border: 1px solid #bbf7d0;
+        }
+        .vote-stats-panel h3 {
+            color: #16a34a; font-size: 0.95em; margin-bottom: 8px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .vote-stat-item {
+            padding: 4px 8px; margin-bottom: 3px; font-size: 0.8em;
+            color: #374151; border-radius: 4px; word-break: break-word;
+        }
+        .vote-stat-good { background: #ecfdf5; border-left: 3px solid #10b981; }
+        .vote-stat-bad { background: #fef2f2; border-left: 3px solid #ef4444; }
+        .clear-votes-btn {
+            padding: 4px 10px; background: #f59e0b; color: white;
+            border: none; border-radius: 4px; cursor: pointer; font-size: 0.8em;
+        }
+        .clear-votes-btn:hover { background: #d97706; }
+        .vote-stats-summary {
+            font-size: 0.8em; color: #6b7280; margin-bottom: 8px;
+            padding: 6px 10px; background: white; border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -369,6 +417,13 @@
                 <div class="history-panel" id="historyPanel" style="display: none;">
                     <h3>📚 Historial <button class="clear-history-btn" onclick="clearHistory()">🗑️ Limpiar</button></h3>
                     <div id="historyList"></div>
+                </div>
+
+                <!-- Estadísticas de Votos -->
+                <div class="vote-stats-panel" id="voteStatsPanel" style="display: none;">
+                    <h3>📊 Preferencias Aprendidas <button class="clear-votes-btn" onclick="clearVotes()">🗑️ Reiniciar</button></h3>
+                    <div class="vote-stats-summary" id="voteStatsSummary"></div>
+                    <div id="voteStatsList"></div>
                 </div>
             </div>
         </div>
@@ -547,14 +602,27 @@
             const text = prompt.positive_prompt.toLowerCase();
             const parts = [];
 
+            // Hair
+            const hairs = {
+                'blonde': 'rubia', 'brunette': 'morena', 'red hair': 'pelirroja',
+                'black hair': 'pelo negro', 'auburn': 'pelo caoba', 'platinum': 'pelo platino',
+                'pixie cut': 'pelo corto', 'ponytail': 'coleta', 'curls': 'rizos',
+            };
+            for (const [en, es] of Object.entries(hairs)) {
+                if (text.includes(en)) { parts.push(es); break; }
+            }
+
             const poses = {
                 'doggy style': 'a cuatro patas', 'on all fours': 'a cuatro patas',
                 'hands and knees': 'de rodillas', 'lying on bed': 'tumbada en cama',
-                'laying on back': 'tumbada boca arriba', 'sitting pose': 'sentada',
-                'standing pose': 'de pie', 'kneeling': 'arrodillada',
+                'laying on back': 'tumbada boca arriba', 'lying on back': 'tumbada boca arriba',
+                'sitting pose': 'sentada', 'standing pose': 'de pie', 'kneeling': 'arrodillada',
                 'bent over': 'inclinada', 'arched back': 'espalda arqueada',
                 'legs spread': 'piernas abiertas', 'provocative pose': 'pose provocativa',
-                'seductive pose': 'pose seductora', 'intimate pose': 'pose íntima'
+                'seductive pose': 'pose seductora', 'intimate pose': 'pose íntima',
+                'straddling': 'a horcajadas', 'squatting': 'en cuclillas',
+                'spread eagle': 'abierta', 'reverse cowgirl': 'cowgirl invertida',
+                'contrapposto': 'contrapposto', 'reclining': 'reclinada',
             };
             for (const [en, es] of Object.entries(poses)) {
                 if (text.includes(en)) { parts.push(es); break; }
@@ -567,12 +635,15 @@
             else if (text.includes('dress')) parts.push('en vestido');
             else if (text.includes('robe')) parts.push('en bata');
             else if (text.includes('bodysuit')) parts.push('en body');
+            else if (text.includes('stockings')) parts.push('en medias');
+            else if (text.includes('corset')) parts.push('en corsé');
 
             const locations = {
                 'bedroom': 'habitación', 'bathroom': 'baño', 'luxury bedroom': 'habitación lujosa',
                 'hotel room': 'hotel', 'jacuzzi': 'jacuzzi', 'sauna': 'sauna',
                 'poolside': 'piscina', 'beach': 'playa', 'yacht': 'yate',
-                'rooftop': 'azotea', 'spa': 'spa', 'shower': 'ducha'
+                'rooftop': 'azotea', 'spa': 'spa', 'shower': 'ducha',
+                'penthouse': 'penthouse', 'cabin': 'cabaña', 'studio': 'estudio',
             };
             for (const [en, es] of Object.entries(locations)) {
                 if (text.includes(en)) { parts.push(`en ${es}`); break; }
@@ -582,10 +653,13 @@
             else if (text.includes('side profile') || text.includes('side view')) parts.push('perfil lateral');
             else if (text.includes('close-up') || text.includes('closeup')) parts.push('primer plano');
             else if (text.includes('full body')) parts.push('cuerpo completo');
+            else if (text.includes('high angle')) parts.push('ángulo alto');
+            else if (text.includes('low angle')) parts.push('ángulo bajo');
 
             const expressions = {
                 'seductive': 'seductora', 'lustful': 'lujuriosa', 'biting lip': 'mordiendo labio',
-                'playful': 'juguetona', 'sultry': 'sensual', 'intense eye contact': 'mirada intensa'
+                'playful': 'juguetona', 'sultry': 'sensual', 'intense eye contact': 'mirada intensa',
+                'ecstasy': 'éxtasis', 'dominant': 'dominante', 'vulnerable': 'vulnerable',
             };
             for (const [en, es] of Object.entries(expressions)) {
                 if (text.includes(en)) { parts.push(es); break; }
@@ -594,6 +668,11 @@
             if (text.includes('wet')) parts.push('mojada');
             if (text.includes('oil')) parts.push('con aceite');
             if (text.includes('sweat')) parts.push('sudorosa');
+
+            // Style
+            if (text.includes('kodak')) parts.push('estilo Kodak');
+            else if (text.includes('fujifilm')) parts.push('estilo Fujifilm');
+            else if (text.includes('cinematic')) parts.push('cinemático');
 
             return parts.length > 0 ? parts.join(', ') : 'Imagen generada';
         }
@@ -615,6 +694,11 @@
                         </h3>
                         <p class="token-count">~${tokens} tokens estimados</p>
                         <div class="prompt-text"><strong>Positive:</strong> ${p.positive_prompt}<br><br><strong>Negative:</strong> ${p.negative_prompt}</div>
+                        <div class="vote-buttons">
+                            <button class="vote-btn vote-up" onclick="votePrompt(0, 'up')" title="Genera más prompts similares">👍 <span class="vote-label">Bueno</span></button>
+                            <button class="vote-btn vote-down" onclick="votePrompt(0, 'down')" title="Evita generar prompts similares">👎 <span class="vote-label">Malo</span></button>
+                        </div>
+                        <p class="vote-info">Vota para que el generador aprenda tus preferencias</p>
                         <details style="margin-top: 10px;">
                             <summary style="cursor: pointer; color: #667eea; font-size: 0.9em;">Ver JSON completo</summary>
                             <div class="prompt-json"><pre>${JSON.stringify(p, null, 2)}</pre></div>
@@ -635,6 +719,10 @@
                             </h3>
                             <p class="token-count">~${tokens} tokens</p>
                             <div class="prompt-text"><strong>Positive:</strong> ${prompt.positive_prompt}<br><br><strong>Negative:</strong> ${prompt.negative_prompt}</div>
+                            <div class="vote-buttons">
+                                <button class="vote-btn vote-up" onclick="votePrompt(${index}, 'up')" title="Genera más prompts similares">👍 <span class="vote-label">Bueno</span></button>
+                                <button class="vote-btn vote-down" onclick="votePrompt(${index}, 'down')" title="Evita generar prompts similares">👎 <span class="vote-label">Malo</span></button>
+                            </div>
                             <details style="margin-top: 10px;">
                                 <summary style="cursor: pointer; color: #667eea; font-size: 0.9em;">Ver JSON completo</summary>
                                 <div class="prompt-json"><pre>${JSON.stringify(prompt, null, 2)}</pre></div>
@@ -676,10 +764,72 @@
             }).catch(err => alert('Error al copiar: ' + err));
         }
 
+        // --- Voting System ---
+        function votePrompt(index, voteType) {
+            if (!window.currentPrompts || !window.currentPrompts[index]) return;
+            const prompt = window.currentPrompts[index];
+            generator.registerVote(prompt.positive_prompt, voteType);
+
+            // Update UI
+            const sections = document.querySelectorAll('.prompt-section');
+            const section = sections[index];
+            if (section) {
+                const upBtn = section.querySelector('.vote-up');
+                const downBtn = section.querySelector('.vote-down');
+                upBtn.classList.remove('voted');
+                downBtn.classList.remove('voted');
+                if (voteType === 'up') {
+                    upBtn.classList.add('voted');
+                    upBtn.innerHTML = '👍 <span class="vote-label">¡Votado!</span>';
+                } else {
+                    downBtn.classList.add('voted');
+                    downBtn.innerHTML = '👎 <span class="vote-label">¡Votado!</span>';
+                }
+            }
+            updateVoteStats();
+        }
+
+        function updateVoteStats() {
+            const stats = generator.getVoteStats();
+            const panel = document.getElementById('voteStatsPanel');
+            const summary = document.getElementById('voteStatsSummary');
+            const list = document.getElementById('voteStatsList');
+
+            if (stats.totalVotes === 0) { panel.style.display = 'none'; return; }
+
+            panel.style.display = 'block';
+            summary.textContent = `${stats.totalVotes} votos registrados · El generador aprende de tus preferencias`;
+
+            let html = '';
+            if (stats.preferences.length > 0) {
+                html += '<div style="margin-bottom: 8px; font-weight: 600; color: #10b981; font-size: 0.85em;">👍 Te gusta:</div>';
+                stats.preferences.slice(0, 5).forEach(p => {
+                    const text = p.element.length > 55 ? p.element.substring(0, 55) + '...' : p.element;
+                    html += `<div class="vote-stat-item vote-stat-good">${text} <strong>(+${p.score})</strong></div>`;
+                });
+            }
+            if (stats.avoided.length > 0) {
+                html += '<div style="margin-top: 8px; margin-bottom: 8px; font-weight: 600; color: #ef4444; font-size: 0.85em;">👎 Evitar:</div>';
+                stats.avoided.slice(0, 5).forEach(p => {
+                    const text = p.element.length > 55 ? p.element.substring(0, 55) + '...' : p.element;
+                    html += `<div class="vote-stat-item vote-stat-bad">${text} <strong>(${p.score})</strong></div>`;
+                });
+            }
+            list.innerHTML = html;
+        }
+
+        function clearVotes() {
+            if (confirm('¿Borrar todas las preferencias aprendidas?')) {
+                generator.clearVoteData();
+                updateVoteStats();
+            }
+        }
+
         // Initialize
         document.querySelector('[data-wet="false"]').classList.add('active');
         updateLevelOptions();
         renderHistory();
+        updateVoteStats();
     </script>
 </body>
 </html>
