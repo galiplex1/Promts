@@ -69,31 +69,59 @@ class PromptGenerator {
             burgundy: "burgundy hair, deep wine-red, dark and mysterious",
         };
 
-        // === ESTILOS DE PERSONA ===
+        // === PREFERENCIAS DE PELO POR ESTILO ===
+        this.style_hair_preferences = {
+            normal: {
+                styles: ['long_waves', 'long_straight', 'shoulder', 'ponytail', 'messy_bun', 'half_up'],
+                colors: ['blonde', 'dark_blonde', 'brunette', 'light_brown', 'balayage', 'caramel']
+            },
+            futbolera: {
+                styles: ['ponytail', 'bun', 'short_bob', 'shoulder', 'long_straight'],
+                colors: ['brunette', 'light_brown', 'dark_blonde', 'chestnut', 'auburn']
+            },
+            alternativa: {
+                styles: ['pixie', 'messy_bun', 'tousled', 'short_bob', 'long_curls', 'curtains'],
+                colors: ['red', 'burgundy', 'platinum', 'rose_gold', 'black', 'ombre']
+            },
+            gotica: {
+                styles: ['long_straight', 'long_curls', 'sleek', 'thick_mane', 'half_up'],
+                colors: ['black', 'burgundy', 'dark_red', 'jet_black', 'deep_purple']
+            },
+            pija: {
+                styles: ['long_waves', 'sleek', 'long_straight', 'elegant_bun', 'balayage_style'],
+                colors: ['blonde', 'platinum', 'ash_blonde', 'champagne', 'honey_blonde']
+            },
+            hipster: {
+                styles: ['messy_bun', 'curtains', 'tousled', 'half_up', 'shoulder', 'long_braids'],
+                colors: ['auburn', 'rose_gold', 'balayage', 'ash_brown', 'strawberry_blonde', 'ombre']
+            }
+        };
+
+        // === ESTILOS DE PERSONA (EXAGERADOS) ===
         this.person_styles = {
             normal: {
                 modifier: "confident and naturally beautiful",
-                extras: "effortless elegance, girl-next-door charm",
+                extras: "effortless elegance, girl-next-door charm, natural charisma",
             },
             futbolera: {
-                modifier: "athletic soccer player build, sporty and fit",
-                extras: "toned athletic body, post-workout glow, energetic vibe",
+                modifier: "athletic soccer player build, sporty and fit, toned physique",
+                extras: "defined abs and legs, post-workout glow, energetic vibe, athletic confidence, sports watch on wrist",
             },
             alternativa: {
-                modifier: "alternative style, edgy and unique",
-                extras: "tattoos on arms and ribs, nose piercing, rebellious energy",
+                modifier: "alternative punk style, edgy rebellious unique",
+                extras: "full sleeve tattoos both arms, neck tattoo visible, nose ring, eyebrow piercing, multiple ear piercings, lip ring, rebellious defiant energy, punk attitude",
             },
             gotica: {
-                modifier: "gothic aesthetic, dark mysterious beauty",
-                extras: "dark smoky eye makeup, black nail polish, pale skin, mysterious aura",
+                modifier: "gothic aesthetic, dark mysterious beauty, nocturnal allure",
+                extras: "dramatic long black eyeliner wings, heavy dark eyeshadow, black lipstick, black nail polish, pale porcelain skin, septum piercing, dark mysterious aura, gothic jewelry, choker necklace",
             },
             pija: {
-                modifier: "elegant upscale sophisticated style",
-                extras: "designer jewelry, polished refined look, luxury aesthetic",
+                modifier: "elegant upscale sophisticated high-class style",
+                extras: "expensive designer jewelry, Cartier bracelet, diamond earrings, luxury watch, polished flawless look, high-end aesthetic, refined posture, wealthy elegance",
             },
             hipster: {
-                modifier: "hipster indie style, artistic vibe",
-                extras: "vintage aesthetic, bohemian accessories, creative energy",
+                modifier: "hipster indie artistic style, bohemian vibe",
+                extras: "vintage round glasses, multiple vintage rings, bohemian accessories, creative artistic energy, indie aesthetic, retro fashion sense",
             },
         };
 
@@ -585,6 +613,19 @@ class PromptGenerator {
             "dressing room mirror, full-length mirror, soft diffused light",
             "mirror reflection selfie, city bedroom, glass reflection effect",
             "bathroom mirror framed shot, luxury bathroom, candle reflections",
+            // === BACKGROUNDS GÓTICOS/OSCUROS ===
+            "dark gothic bedroom, black silk sheets, candles only, dim moody lighting",
+            "abandoned gothic mansion, dusty ornate furniture, moonlight through window",
+            "dark dungeon aesthetic, stone walls, chains visible, dim torch light",
+            "black velvet bedroom, gothic decor, crimson accents, candlelight shadows",
+            "dark occult room, pentagrams, candles everywhere, mysterious atmosphere",
+            "gothic cathedral interior, stained glass, dramatic shadows, ethereal light",
+            "vampire aesthetic bedroom, dramatic red and black, ornate gothic furniture",
+            "dark foggy cemetery night, full moon, eerie atmospheric",
+            "abandoned warehouse, graffiti walls, harsh overhead light, urban decay",
+            "underground club, neon lights, dark corners, pulsing atmosphere",
+            "industrial basement, exposed pipes, dim red lighting, urban underground",
+            "alternative tattoo parlor, neon signs, edgy atmosphere, artistic chaos",
         ];
 
         // === ESCENARIOS ===
@@ -785,6 +826,41 @@ class PromptGenerator {
         return Math.random();
     }
 
+    // --- Selecciona background apropiado según estilo ---
+    _getAppropriateBackground(personStyle) {
+        // Índices de backgrounds oscuros/góticos (últimos 12 añadidos)
+        const darkBackgroundsStart = this.backgrounds.length - 12;
+        
+        if (personStyle === 'gotica') {
+            // Para gótica: 80% de probabilidad de backgrounds oscuros
+            if (Math.random() < 0.8) {
+                const darkBgs = this.backgrounds.slice(darkBackgroundsStart);
+                return this._smartChoice(darkBgs, 'backgrounds');
+            }
+        } else if (personStyle === 'alternativa') {
+            // Para alternativa: 60% de probabilidad de backgrounds oscuros/urbanos
+            if (Math.random() < 0.6) {
+                const darkBgs = this.backgrounds.slice(darkBackgroundsStart);
+                return this._smartChoice(darkBgs, 'backgrounds');
+            }
+        } else if (personStyle === 'pija') {
+            // Para pija: evitar backgrounds oscuros/sucios, solo los lujosos
+            const luxuryBgs = this.backgrounds.filter(bg => 
+                !bg.includes('dark') && !bg.includes('abandoned') && 
+                !bg.includes('warehouse') && !bg.includes('graffiti') &&
+                (bg.includes('luxury') || bg.includes('penthouse') || 
+                 bg.includes('designer') || bg.includes('villa') || bg.includes('yacht'))
+            );
+            if (luxuryBgs.length > 0 && Math.random() < 0.7) {
+                return this._smartChoice(luxuryBgs, 'backgrounds');
+            }
+        }
+        
+        // Para otros estilos: evitar backgrounds muy oscuros
+        const normalBgs = this.backgrounds.slice(0, darkBackgroundsStart);
+        return this._smartChoice(normalBgs, 'backgrounds');
+    }
+
     // --- Construye descripción completa de persona ---
     _buildPersonDescription(personStyle = 'normal', breastSize = 'medium', hairStyle = 'long_waves', hairColor = 'blonde') {
         const parts = [];
@@ -792,20 +868,54 @@ class PromptGenerator {
         // Base fija
         parts.push(this.person_fixed.base);
         
+        // Selección automática de pelo según estilo
+        let selectedHairStyle = hairStyle;
+        let selectedHairColor = hairColor;
+        
+        if (hairStyle === 'auto' || hairColor === 'auto') {
+            const prefs = this.style_hair_preferences[personStyle] || this.style_hair_preferences.normal;
+            
+            if (hairStyle === 'auto') {
+                selectedHairStyle = this._smartChoice(prefs.styles) || 'long_waves';
+            }
+            
+            if (hairColor === 'auto') {
+                // Para gótica siempre negro o tonos oscuros
+                if (personStyle === 'gotica') {
+                    selectedHairColor = this._smartChoice(['black', 'black', 'black', 'burgundy']) || 'black';
+                } 
+                // Para pija siempre rubio o tonos claros
+                else if (personStyle === 'pija') {
+                    selectedHairColor = this._smartChoice(['blonde', 'blonde', 'platinum', 'ash_blonde']) || 'blonde';
+                }
+                // Para el resto, usar las preferencias o mapear colores apropiados
+                else {
+                    const colorMap = {
+                        normal: ['blonde', 'brunette', 'light_brown', 'dark_blonde'],
+                        futbolera: ['brunette', 'light_brown', 'dark_blonde', 'chestnut'],
+                        alternativa: ['red', 'burgundy', 'platinum', 'black', 'rose_gold'],
+                        hipster: ['auburn', 'balayage', 'ash_brown', 'strawberry_blonde']
+                    };
+                    const colors = colorMap[personStyle] || colorMap.normal;
+                    selectedHairColor = this._smartChoice(colors) || 'brunette';
+                }
+            }
+        }
+        
         // Pelo: estilo + color
-        const style_hair = this.hair_styles[hairStyle] || this.hair_styles.long_waves;
-        const color_hair = this.hair_colors[hairColor] || this.hair_colors.blonde;
+        const style_hair = this.hair_styles[selectedHairStyle] || this.hair_styles.long_waves;
+        const color_hair = this.hair_colors[selectedHairColor] || this.hair_colors.blonde;
         parts.push(style_hair + ", " + color_hair);
         
         // Estilo de persona seleccionado
         const style = this.person_styles[personStyle] || this.person_styles.normal;
         parts.push(style.modifier);
         
-        // Skin (ajustar según estilo gótico)
+        // Skin (ajustar según estilo)
         if (personStyle === 'gotica') {
-            parts.push("fair porcelain skin, pale complexion");
+            parts.push("fair porcelain skin, pale ghost-white complexion, alabaster skin tone");
         } else if (personStyle === 'alternativa') {
-            parts.push("sun-kissed tan skin, smooth complexion, natural glow");
+            parts.push("sun-kissed tan skin, smooth complexion with visible ink, natural glow");
         } else {
             parts.push(this.person_fixed.skin);
         }
@@ -813,11 +923,13 @@ class PromptGenerator {
         parts.push(this.person_fixed.eyes);
         parts.push(this.person_fixed.face);
         
-        // Makeup (ajustar según estilo)
+        // Makeup (ajustar según estilo - MÁS EXAGERADO)
         if (personStyle === 'gotica') {
-            parts.push("dark smoky eye makeup, black lipstick, dramatic gothic look");
+            parts.push("dramatic long black winged eyeliner, heavy dark eyeshadow, black lipstick, gothic makeup, dark nail polish, intense dramatic look");
         } else if (personStyle === 'alternativa') {
-            parts.push("edgy makeup, bold eyeliner, alternative style");
+            parts.push("bold edgy makeup, thick black eyeliner, alternative style makeup, rebellious look");
+        } else if (personStyle === 'pija') {
+            parts.push("flawless professional makeup, elegant subtle look, expensive cosmetics, refined beauty");
         } else {
             parts.push(this.person_fixed.makeup);
         }
@@ -932,9 +1044,9 @@ class PromptGenerator {
             const location_option = custom_options.location;
             if (location_option && location_option !== 'random') {
                 const location_map = this._getLocationMap();
-                prompt_parts.push(location_map[location_option] || this._smartChoice(this.backgrounds, 'backgrounds'));
+                prompt_parts.push(location_map[location_option] || this._getAppropriateBackground(person_style));
             } else {
-                prompt_parts.push(this._smartChoice(this.backgrounds, 'backgrounds'));
+                prompt_parts.push(this._getAppropriateBackground(person_style));
             }
 
             // Ropa/cobertura
@@ -1035,9 +1147,9 @@ class PromptGenerator {
             const location_option = custom_options.location;
             if (location_option && location_option !== 'random') {
                 const location_map = this._getLocationMap();
-                prompt_parts.push(location_map[location_option] || this._smartChoice(this.backgrounds, 'backgrounds'));
+                prompt_parts.push(location_map[location_option] || this._getAppropriateBackground(person_style));
             } else {
-                prompt_parts.push(this._smartChoice(this.backgrounds, 'backgrounds'));
+                prompt_parts.push(this._getAppropriateBackground(person_style));
             }
 
             // Accesorios (sometimes)
@@ -1108,7 +1220,7 @@ class PromptGenerator {
             if (randomize && this._randomFloat() > 0.3) {
                 prompt_parts.push(this._smartChoice(this.facial_expressions, 'facial_expressions'));
             }
-            prompt_parts.push(this._smartChoice(this.backgrounds, 'backgrounds'));
+            prompt_parts.push(this._getAppropriateBackground(person_style));
             if (this._randomFloat() > 0.5) {
                 prompt_parts.push(this._smartChoice(this.accessories, 'accessories'));
             }
@@ -1124,7 +1236,7 @@ class PromptGenerator {
             if (randomize && this._randomFloat() > 0.2) {
                 prompt_parts.push(this._smartChoice(this.facial_expressions, 'facial_expressions'));
             }
-            prompt_parts.push(this._smartChoice(this.backgrounds, 'backgrounds'));
+            prompt_parts.push(this._getAppropriateBackground(person_style));
             if (this._randomFloat() > 0.5) {
                 prompt_parts.push(this._smartChoice(this.atmosphere_details, 'atmosphere_details'));
             }
@@ -1148,7 +1260,7 @@ class PromptGenerator {
                 prompt_parts.push(this._smartChoice(this.facial_expressions, 'facial_expressions'));
             }
             prompt_parts.push(this._smartChoice(this.lighting, 'lighting'));
-            prompt_parts.push(this._smartChoice(this.backgrounds, 'backgrounds'));
+            prompt_parts.push(this._getAppropriateBackground(person_style));
             if (this._randomFloat() > 0.4) {
                 prompt_parts.push(this._smartChoice(this.atmosphere_details, 'atmosphere_details'));
             }
@@ -1282,7 +1394,7 @@ class PromptGenerator {
         if (loc_opt && loc_opt !== 'random') {
             const location_map = this._getLocationMap();
             const filtered = prompt_parts.filter(p => !p.toLowerCase().includes('background') && !p.toLowerCase().includes('setting'));
-            filtered.push(location_map[loc_opt] || this._smartChoice(this.backgrounds, 'backgrounds'));
+            filtered.push(location_map[loc_opt] || this._getAppropriateBackground(person_style));
             prompt_parts.length = 0;
             filtered.forEach(p => prompt_parts.push(p));
         }

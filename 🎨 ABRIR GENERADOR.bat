@@ -5,57 +5,31 @@ cls
 echo.
 echo  ╔══════════════════════════════════════════════════════════╗
 echo  ║                                                          ║
-echo  ║         🎨 GENERADOR DE PROMPTS IA - WEB 🌐              ║
+echo  ║         🎨 GENERADOR DE PROMPTS IA - SDXL 🖼️              ║
 echo  ║                                                          ║
 echo  ╚══════════════════════════════════════════════════════════╝
 echo.
 echo.
-echo   [√] Python 3.12.10 instalado
+echo   [√] Abriendo interfaz web...
 echo.
 
-REM Verificar Flask
-python -m pip show Flask >nul 2>&1
-if %errorlevel% neq 0 (
-    echo   [!] Instalando Flask...
-    python -m pip install Flask --quiet >nul 2>&1
-    echo   [√] Flask instalado
-) else (
-    echo   [√] Flask instalado
-)
+timeout /t 1 /nobreak >nul
 
-echo.
-echo   Iniciando servidor web...
-echo.
+cd /d "%~dp0"
+start "" "docs\index.html"
 
-timeout /t 2 /nobreak >nul
-
-start /B python app_web.py
-
-echo   [√] Servidor iniciado
-echo.
-timeout /t 3 /nobreak >nul
-
-echo   [√] Abriendo navegador...
-start http://localhost:5000
-
+echo   [√] Generador abierto en tu navegador
 echo.
 echo  ╔══════════════════════════════════════════════════════════╗
 echo  ║                                                          ║
-echo  ║   ✨ INTERFAZ WEB ACTIVA en http://localhost:5000        ║
+echo  ║   ✨ INTERFAZ ACTIVA                                     ║
 echo  ║                                                          ║
-echo  ║   • Selecciona opciones                                  ║
+echo  ║   • Selecciona estilo de persona y opciones              ║
 echo  ║   • Click "Generar Prompts"                              ║
-echo  ║   • Click "Copiar" para copiar al portapapeles           ║
+echo  ║   • Vota con 👍/👎 tus favoritos                         ║
+echo  ║   • Copia los prompts que te gusten                      ║
 echo  ║                                                          ║
 echo  ╚══════════════════════════════════════════════════════════╝
 echo.
-echo.
-echo   Presiona cualquier tecla para DETENER el servidor...
+echo   Presiona cualquier tecla para cerrar esta ventana...
 pause >nul
-
-taskkill /F /FI "WINDOWTITLE eq *python*app_web.py*" >nul 2>&1
-taskkill /F /FI "IMAGENAME eq python.exe" /FI "MEMUSAGE gt 30000" >nul 2>&1
-
-echo.
-echo   [√] Servidor detenido
-timeout /t 2 /nobreak >nul
