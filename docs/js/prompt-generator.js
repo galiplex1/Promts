@@ -538,6 +538,16 @@ class PromptGenerator {
             "home theater room, dim blue ambient lighting",
             "private library, leather and wood, warm lamp light",
             "garden terrace, fairy lights, warm summer evening",
+            "full-length standing mirror, bathroom background, natural light",
+            "bedroom mirror selfie, reflected in large mirror, indirect light",
+            "bathroom mirror, vanity lights around mirror, glowing ambient",
+            "full-body mirror view, bedroom mirror reflecting body, warm glow",
+            "mirror selfie, bathroom mirror with steam, sultry moody lighting",
+            "standing mirror reflection, bedroom interior visible in mirror",
+            "bathroom mirror shot, light reflections on mirror surface, intimate",
+            "dressing room mirror, full-length mirror, soft diffused light",
+            "mirror reflection selfie, city bedroom, glass reflection effect",
+            "bathroom mirror framed shot, luxury bathroom, candle reflections",
         ];
 
         // === ESCENARIOS ===
@@ -554,6 +564,11 @@ class PromptGenerator {
             "getting undressed, clothing mid-removal",
             "trying on outfits, caught between changes",
             "lazy weekend morning in bed, natural light",
+            "mirror selfie moment, taking photo in mirror, reflected image",
+            "bathroom mirror photo, checking appearance in mirror",
+            "full-length mirror pose, viewing body in reflection",
+            "mirror selfie after shower, bathroom steam in background",
+            "getting ready moment, mirror selfie, applying finishing touches",
         ];
 
         // === ÁNGULOS DE CÁMARA ===
@@ -1270,6 +1285,7 @@ class PromptGenerator {
         return {
             bedroom: 'cozy bedroom, warm lamp light',
             bathroom: 'modern bathroom, marble surfaces, steam',
+            mirror: 'full-length mirror, bathroom or bedroom, natural soft light, mirror reflection effect, body reflected in mirror',
             luxury_bedroom: 'luxury bedroom, silk sheets, designer decor',
             hotel_room: 'boutique hotel room, tasteful decor, city view',
             jacuzzi: 'private jacuzzi, bubbling water, warm lighting',
