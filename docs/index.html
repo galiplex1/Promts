@@ -297,6 +297,48 @@
                     </select>
                 </div>
 
+                <div class="form-group">
+                    <label>💇‍♀️ Estilo de Pelo</label>
+                    <select id="hairStyle" style="margin-bottom: 10px;">
+                        <option value="long_straight">Largo liso - Suave y fluido</option>
+                        <option value="long_waves" selected>Largo ondulado - Suave natural</option>
+                        <option value="long_curls">Largo rizado - Voluminoso y rebotador</option>
+                        <option value="long_braids">Largo trenzado - Bohemio</option>
+                        <option value="shoulder">Hombro - Largo clásico versátil</option>
+                        <option value="short_bob">Bob corto - Moderno y chic</option>
+                        <option value="pixie">Pixie - Atrevido y moderno</option>
+                        <option value="ponytail">Cola de caballo - Pulido y elegante</option>
+                        <option value="bun">Moño - Elegante tirado atrás</option>
+                        <option value="messy_bun">Moño desordenado - Casual sensual</option>
+                        <option value="half_up">Medio recogido - Romántico</option>
+                        <option value="curtains">Cortinillas - Enmarcando cara</option>
+                        <option value="thick_mane">Melena gruesa - Voluminosa lujosa</option>
+                        <option value="tousled">Tousled - Desordenado sexy</option>
+                        <option value="sleek">Liso brillante - Ultra suave espejo</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>🎨 Color de Pelo</label>
+                    <select id="hairColor" style="margin-bottom: 10px;">
+                        <option value="blonde" selected>Rubio - Dorado con reflejos</option>
+                        <option value="dark_blonde">Rubio oscuro - Miel tonelada cálida</option>
+                        <option value="brunette">Castaño - Chocolate oscuro rico</option>
+                        <option value="light_brown">Castaño claro - Caramelo reflejos</option>
+                        <option value="black">Negro - Negro azabache profundo</option>
+                        <option value="red">Rojo - Cobre rojo vibrante</option>
+                        <option value="auburn">Auburn - Rojizo-marrón lujoso</option>
+                        <option value="strawberry_blonde">Rubio fresa - Rojo-rubio raro</option>
+                        <option value="ombre">Ombre - Gradiente oscuro a claro</option>
+                        <option value="balayage">Balayage - Naturalmente iluminado</option>
+                        <option value="platinum">Platino - Plata-rubio ultra claro</option>
+                        <option value="rose_gold">Rosa oro - Tonelada rosa-oro</option>
+                        <option value="ash_brown">Castaño ceniza - Marrón apagado sofisticado</option>
+                        <option value="chestnut">Castaño - Tonelada rojiza castaña</option>
+                        <option value="burgundy">Burdeos - Vino-rojo profundo</option>
+                    </select>
+                </div>
+
                 <div id="classicControls">
                     <div class="form-group">
                         <label>Tipo de Imagen</label>
@@ -586,11 +628,15 @@
             const explicitnessLevel = parseInt(document.getElementById('explicitnessLevel').value);
             const personStyle = document.getElementById('personStyle').value;
             const breastSize = document.getElementById('breastSize').value;
+            const hairStyle = document.getElementById('hairStyle').value;
+            const hairColor = document.getElementById('hairColor').value;
 
             const config = {
                 explicitness_level: explicitnessLevel,
                 person_style: personStyle,
                 breast_size: breastSize,
+                hair_style: hairStyle,
+                hair_color: hairColor,
                 clothed: currentConfig.clothed,
                 wet: currentConfig.wet,
                 custom_options: {

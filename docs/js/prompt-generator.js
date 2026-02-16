@@ -25,11 +25,48 @@ class PromptGenerator {
         // === PERSONA BASE FIJA ===
         this.person_fixed = {
             base: "stunning young woman, 22 years old",
-            hair: "long flowing blonde hair, silky smooth, sun-kissed highlights",
             skin: "sun-kissed tan skin, smooth flawless complexion, natural glow",
             eyes: "bright green eyes, captivating intense gaze",
             face: "perfect symmetrical face, high cheekbones, full lips",
             makeup: "natural makeup, glossy lips, subtle eyeliner, fresh look",
+        };
+
+        // === ESTILOS DE PELO ===
+        this.hair_styles = {
+            long_straight: "long straight hair, sleek and flowing, shoulder below",
+            long_waves: "long wavy hair, soft waves, cascading over shoulders",
+            long_curls: "long curly hair, spiral curls, voluminous and bouncy",
+            long_braids: "long braided hair, intricate braids, bohemian style",
+            shoulder: "shoulder-length hair, classic shoulder bob, versatile length",
+            short_bob: "short bob cut, chin-length, modern and chic",
+            pixie: "short pixie cut, edgy and daring, close to scalp",
+            ponytail: "high sleek ponytail, tight and polished, reveals face",
+            bun: "hair in tight bun, pulled back elegantly, minimal strands",
+            messy_bun: "messy bun, loose and effortless, casual sexy vibe",
+            half_up: "half-up half-down, partial updo, romantic style",
+            curtains: "curtain bangs, framing the face, trendy and soft",
+            thick_mane: "thick full mane of hair, voluminous and luxurious",
+            tousled: "tousled bedhead hair, undone and sexy, natural texture",
+            sleek: "sleek and glossy hair, ultra-smooth, mirror shine",
+        };
+
+        // === COLORES DE PELO ===
+        this.hair_colors = {
+            blonde: "blonde hair, sun-kissed golden highlights, light and bright",
+            dark_blonde: "dark blonde hair, honey-toned, warm light brown-blonde mix",
+            brunette: "brunette hair, dark chocolate brown, rich and warm",
+            light_brown: "light brown hair with caramel highlights, warm medium brown",
+            black: "jet black hair, deep and glossy black, elegant",
+            red: "red hair, fiery copper-red, vibrant and striking",
+            auburn: "auburn hair, dark reddish-brown, luxurious deep tone",
+            strawberry_blonde: "strawberry blonde hair, light red-blonde mix, rare and beautiful",
+            ombre: "ombre hair, dark at roots to light at tips, color gradient effect",
+            balayage: "balayage hair, naturally highlighted, sun-kissed dimension",
+            platinum: "platinum blonde hair, silver-blonde, ultra-light and icy",
+            rose_gold: "rose gold hair, pink-gold tone, trendy metallic",
+            ash_brown: "ash brown hair, cool-toned muted brown, sophisticated",
+            chestnut: "chestnut brown hair, reddish undertones, warm rich brown",
+            burgundy: "burgundy hair, deep wine-red, dark and mysterious",
         };
 
         // === ESTILOS DE PERSONA ===
@@ -749,20 +786,26 @@ class PromptGenerator {
     }
 
     // --- Construye descripción completa de persona ---
-    _buildPersonDescription(personStyle = 'normal', breastSize = 'medium') {
+    _buildPersonDescription(personStyle = 'normal', breastSize = 'medium', hairStyle = 'long_waves', hairColor = 'blonde') {
         const parts = [];
         
         // Base fija
         parts.push(this.person_fixed.base);
-        parts.push(this.person_fixed.hair);
         
-        // Estilo seleccionado
+        // Pelo: estilo + color
+        const style_hair = this.hair_styles[hairStyle] || this.hair_styles.long_waves;
+        const color_hair = this.hair_colors[hairColor] || this.hair_colors.blonde;
+        parts.push(style_hair + ", " + color_hair);
+        
+        // Estilo de persona seleccionado
         const style = this.person_styles[personStyle] || this.person_styles.normal;
         parts.push(style.modifier);
         
         // Skin (ajustar según estilo gótico)
         if (personStyle === 'gotica') {
             parts.push("fair porcelain skin, pale complexion");
+        } else if (personStyle === 'alternativa') {
+            parts.push("sun-kissed tan skin, smooth complexion, natural glow");
         } else {
             parts.push(this.person_fixed.skin);
         }
@@ -779,7 +822,7 @@ class PromptGenerator {
             parts.push(this.person_fixed.makeup);
         }
         
-        // Támaño de pechos
+        // Tamaño de pechos
         const breastDesc = this.breast_sizes[breastSize] || this.breast_sizes.medium;
         parts.push(breastDesc);
         
@@ -798,10 +841,12 @@ class PromptGenerator {
             explicitness_level = 0,
             person_style = 'normal',
             breast_size = 'medium',
+            hair_style = 'long_waves',
+            hair_color = 'blonde',
         } = options;
 
         if (explicitness_level > 0) {
-            return this._generateByLevel(explicitness_level, custom_options, randomize, person_style, breast_size);
+            return this._generateByLevel(explicitness_level, custom_options, randomize, person_style, breast_size, hair_style, hair_color);
         }
 
         const prompt_parts = [];
@@ -810,7 +855,7 @@ class PromptGenerator {
             // SIN ROPA - SIEMPRE CON TANGA
             const conditionValues = Object.values(this.conditions).filter(v => v);
             const condition = wet ? "wet" : (this._randomFloat() > 0.5 ? this._randomChoice(conditionValues) : "");
-            const personDesc = this._buildPersonDescription(person_style, breast_size);
+            const personDesc = this._buildPersonDescription(person_style, breast_size, hair_style, hair_color);
             if (condition) {
                 prompt_parts.push(`nude of a ${condition} ${personDesc}`);
             } else {
@@ -912,7 +957,7 @@ class PromptGenerator {
         } else {
             // CON ROPA
             const condition = wet ? "wet, water droplets on skin" : "";
-            const personDesc = this._buildPersonDescription(person_style, breast_size);
+            const personDesc = this._buildPersonDescription(person_style, breast_size, hair_style, hair_color);
             if (condition) {
                 prompt_parts.push(`${condition} ${personDesc}`);
             } else {
@@ -1034,9 +1079,9 @@ class PromptGenerator {
         };
     }
 
-    _generateByLevel(level, custom_options, randomize, person_style = 'normal', breast_size = 'medium') {
+    _generateByLevel(level, custom_options, randomize, person_style = 'normal', breast_size = 'medium', hair_style = 'long_waves', hair_color = 'blonde') {
         const prompt_parts = [];
-        const personDesc = this._buildPersonDescription(person_style, breast_size);
+        const personDesc = this._buildPersonDescription(person_style, breast_size, hair_style, hair_color);
 
         // NIVEL 1: Casual
         if (level === 1) {
