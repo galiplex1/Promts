@@ -1209,6 +1209,7 @@
                 btn.classList.toggle('active', i === level);
             });
             onSettingsChange();
+            showToast(`🎯 Nivel ${level} seleccionado`);
         }
 
         // === COLLAPSIBLE ===
@@ -1295,6 +1296,7 @@
 
         // === GENERATE ===
         function generatePrompts() {
+            showToast('⏳ Generando prompts...');
             const count = parseInt(document.getElementById('batchCount').value);
             const opts = gatherOptions();
             const compact = opts.compact;
@@ -1320,6 +1322,7 @@
             displayPrompts(prompts);
             saveToHistory(prompts);
             switchTab('results');
+            showToast(`✅ ${count} prompt${count > 1 ? 's' : ''} generado${count > 1 ? 's' : ''}`);
 
             // Animate button
             const btn = document.getElementById('generateBtn');
@@ -1407,12 +1410,24 @@
             if (!prompt) return;
 
             let text = '';
-            if (type === 'positive') text = prompt.positive_prompt;
-            else if (type === 'negative') text = prompt.negative_prompt;
-            else text = `Positive: ${prompt.positive_prompt}\n\nNegative: ${prompt.negative_prompt}\n\nSteps: ${prompt.steps} | CFG: ${prompt.cfg} | Sampler: ${prompt.sampler} | Size: ${prompt.width}x${prompt.height}`;
+            let label = '';
+            if (type === 'positive') {
+                text = prompt.positive_prompt;
+                label = 'Prompt positivo';
+            } else if (type === 'negative') {
+                text = prompt.negative_prompt;
+                label = 'Prompt negativo';
+            } else if (type === 'both') {
+                // Copiar como JSON completo
+                text = JSON.stringify(prompt, null, 2);
+                label = 'JSON completo';
+            } else {
+                text = `Positive: ${prompt.positive_prompt}\n\nNegative: ${prompt.negative_prompt}\n\nSteps: ${prompt.steps} | CFG: ${prompt.cfg} | Sampler: ${prompt.sampler} | Size: ${prompt.width}x${prompt.height}`;
+                label = 'Prompt completo';
+            }
 
             navigator.clipboard.writeText(text).then(() => {
-                showToast('📋 Copiado al portapapeles');
+                showToast(`📋 ${label} copiado`);
             }).catch(() => {
                 // Fallback
                 const ta = document.createElement('textarea');
@@ -1421,7 +1436,7 @@
                 ta.select();
                 document.execCommand('copy');
                 document.body.removeChild(ta);
-                showToast('📋 Copiado');
+                showToast(`📋 ${label} copiado`);
             });
         }
 
@@ -1430,7 +1445,8 @@
             const prompt = lastGeneratedPrompts[index];
             if (!prompt) return;
             generator.registerVote(prompt.positive_prompt, type);
-            showToast(type === 'up' ? '👍 Voto registrado' : '👎 Voto registrado');
+            const emoji = type === 'up' ? '👍' : '👎';
+            showToast(`${emoji} Voto registrado en Prompt #${index + 1}`);
         }
 
         // === HISTORY ===
