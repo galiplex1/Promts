@@ -211,6 +211,12 @@
             text-transform: none;
             font-size: 0.88rem;
             color: var(--text-primary);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .toggle-row:hover label {
+            color: var(--accent);
         }
 
         .toggle {
@@ -235,6 +241,10 @@
             transition: var(--transition);
         }
 
+        .toggle-slider:hover {
+            border-color: var(--accent);
+        }
+
         .toggle-slider::before {
             content: '';
             position: absolute;
@@ -250,6 +260,10 @@
         .toggle input:checked + .toggle-slider {
             background: var(--accent);
             border-color: var(--accent);
+        }
+
+        .toggle input:checked + .toggle-slider:hover {
+            background: var(--accent-hover);
         }
 
         .toggle input:checked + .toggle-slider::before {
@@ -901,7 +915,7 @@
                         </div>
                         <div class="collapsible-content">
                             <div class="toggle-row">
-                                <label>Con ropa</label>
+                                <label for="clothed">Con ropa</label>
                                 <div class="toggle">
                                     <input type="checkbox" id="clothed" checked onchange="onSettingsChange()">
                                     <span class="toggle-slider"></span>
@@ -909,7 +923,7 @@
                             </div>
 
                             <div class="toggle-row">
-                                <label>Mojada</label>
+                                <label for="wet">Mojada</label>
                                 <div class="toggle">
                                     <input type="checkbox" id="wet" onchange="onSettingsChange()">
                                     <span class="toggle-slider"></span>
@@ -917,7 +931,7 @@
                             </div>
 
                             <div class="toggle-row">
-                                <label>Modo compacto</label>
+                                <label for="compactMode">Modo compacto</label>
                                 <div class="toggle">
                                     <input type="checkbox" id="compactMode" onchange="onSettingsChange()">
                                     <span class="toggle-slider"></span>
@@ -925,7 +939,7 @@
                             </div>
 
                             <div class="toggle-row">
-                                <label>Pesos (emphasis)</label>
+                                <label for="emphasisMode">Pesos (emphasis)</label>
                                 <div class="toggle">
                                     <input type="checkbox" id="emphasisMode" onchange="onSettingsChange()">
                                     <span class="toggle-slider"></span>
