@@ -788,7 +788,7 @@
 
                         <div class="form-group">
                             <label>Tamaño de pechos</label>
-                            <select id="breastSize">
+                            <select id="breastSize" onchange="onSettingsChange()">
                                 <option value="small">Pequeños (A)</option>
                                 <option value="medium" selected>Medianos (B)</option>
                                 <option value="large">Grandes (C)</option>
@@ -806,12 +806,12 @@
                         <div class="collapsible-content">
                             <div class="form-group">
                                 <label>Edad: <span id="ageValue">22</span></label>
-                                <input type="range" id="ageSlider" min="18" max="35" value="22" oninput="document.getElementById('ageValue').textContent = this.value">
+                                <input type="range" id="ageSlider" min="18" max="35" value="22" oninput="document.getElementById('ageValue').textContent = this.value; onSettingsChange();">
                             </div>
 
                             <div class="form-group">
                                 <label>Etnia</label>
-                                <select id="ethnicity">
+                                <select id="ethnicity" onchange="onSettingsChange()">
                                     <option value="default">Por defecto</option>
                                     <option value="european">Europea</option>
                                     <option value="latina">Latina</option>
@@ -826,7 +826,7 @@
 
                             <div class="form-group">
                                 <label>Color de ojos</label>
-                                <select id="eyeColor">
+                                <select id="eyeColor" onchange="onSettingsChange()">
                                     <option value="green">Verdes</option>
                                     <option value="blue">Azules</option>
                                     <option value="brown">Marrones</option>
@@ -849,7 +849,7 @@
                         <div class="collapsible-content">
                             <div class="form-group">
                                 <label>Estilo de pelo</label>
-                                <select id="hairStyle">
+                                <select id="hairStyle" onchange="onSettingsChange()">
                                     <option value="auto">🎲 Automático (según estilo)</option>
                                     <option value="long_straight">Largo liso</option>
                                     <option value="long_waves">Largo ondulado</option>
@@ -871,7 +871,7 @@
 
                             <div class="form-group">
                                 <label>Color de pelo</label>
-                                <select id="hairColor">
+                                <select id="hairColor" onchange="onSettingsChange()">
                                     <option value="auto">🎲 Automático (según estilo)</option>
                                     <option value="blonde">Rubio</option>
                                     <option value="dark_blonde">Rubio oscuro</option>
@@ -903,7 +903,7 @@
                             <div class="toggle-row">
                                 <label>Con ropa</label>
                                 <div class="toggle">
-                                    <input type="checkbox" id="clothed" checked>
+                                    <input type="checkbox" id="clothed" checked onchange="onSettingsChange()">
                                     <span class="toggle-slider"></span>
                                 </div>
                             </div>
@@ -911,7 +911,7 @@
                             <div class="toggle-row">
                                 <label>Mojada</label>
                                 <div class="toggle">
-                                    <input type="checkbox" id="wet">
+                                    <input type="checkbox" id="wet" onchange="onSettingsChange()">
                                     <span class="toggle-slider"></span>
                                 </div>
                             </div>
@@ -919,7 +919,7 @@
                             <div class="toggle-row">
                                 <label>Modo compacto</label>
                                 <div class="toggle">
-                                    <input type="checkbox" id="compactMode">
+                                    <input type="checkbox" id="compactMode" onchange="onSettingsChange()">
                                     <span class="toggle-slider"></span>
                                 </div>
                             </div>
@@ -927,14 +927,14 @@
                             <div class="toggle-row">
                                 <label>Pesos (emphasis)</label>
                                 <div class="toggle">
-                                    <input type="checkbox" id="emphasisMode">
+                                    <input type="checkbox" id="emphasisMode" onchange="onSettingsChange()">
                                     <span class="toggle-slider"></span>
                                 </div>
                             </div>
 
                             <div class="form-group" style="margin-top:10px">
                                 <label>Ropa específica</label>
-                                <select id="clothing">
+                                <select id="clothing" onchange="onSettingsChange()">
                                     <option value="random">🎲 Random</option>
                                     <option value="lingerie">Lencería</option>
                                     <option value="lingerie_sheer">Lencería transparente</option>
@@ -965,7 +965,7 @@
                         <div class="collapsible-content hidden">
                             <div class="form-group">
                                 <label>Expresión facial</label>
-                                <select id="facialExpression">
+                                <select id="facialExpression" onchange="onSettingsChange()">
                                     <option value="random">🎲 Random</option>
                                     <option value="seductive_gaze">Mirada seductora</option>
                                     <option value="lustful_eyes">Ojos lujuriosos</option>
@@ -979,7 +979,7 @@
 
                             <div class="form-group">
                                 <label>Ángulo de cámara</label>
-                                <select id="cameraAngle">
+                                <select id="cameraAngle" onchange="onSettingsChange()">
                                     <option value="random">🎲 Random</option>
                                     <option value="eye_level">Nivel de ojos</option>
                                     <option value="low_angle">Ángulo bajo</option>
@@ -994,7 +994,7 @@
 
                             <div class="form-group">
                                 <label>Ubicación</label>
-                                <select id="location">
+                                <select id="location" onchange="onSettingsChange()">
                                     <option value="random">🎲 Random</option>
                                     <option value="bedroom">Dormitorio</option>
                                     <option value="bathroom">Baño</option>
@@ -1016,7 +1016,7 @@
 
                             <div class="form-group">
                                 <label>Escenario</label>
-                                <select id="scenario">
+                                <select id="scenario" onchange="onSettingsChange()">
                                     <option value="random">🎲 Random</option>
                                     <option value="morning_after">Mañana siguiente</option>
                                     <option value="getting_ready">Arreglándose</option>
