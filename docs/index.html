@@ -923,6 +923,15 @@
                         </div>
                         <div class="collapsible-content">
                             <div class="toggle-row">
+                                <label for="referenceMode">Usar imagen de referencia</label>
+                                <div class="toggle">
+                                    <input type="checkbox" id="referenceMode" onchange="onSettingsChange(); toggleReferenceMode()">
+                                    <span class="toggle-slider"></span>
+                                </div>
+                            </div>
+                            <p id="referenceModeHint" style="display:none; font-size:11px; color:#aaa; margin:-5px 0 10px 0; padding:0 5px;">La mujer se toma de la imagen. Solo se genera pose, ropa, lugar, etc.</p>
+
+                            <div class="toggle-row">
                                 <label for="clothed">Con ropa</label>
                                 <div class="toggle">
                                     <input type="checkbox" id="clothed" checked onchange="onSettingsChange()">
@@ -1227,6 +1236,29 @@
             content.classList.toggle('hidden');
         }
 
+        // === REFERENCE MODE ===
+        function toggleReferenceMode() {
+            const isRef = document.getElementById('referenceMode').checked;
+            const hint = document.getElementById('referenceModeHint');
+            hint.style.display = isRef ? 'block' : 'none';
+
+            // Deshabilitar controles de apariencia cuando se usa imagen de referencia
+            const appearanceIds = ['personStyle', 'breastSize', 'hairStyle', 'hairColor', 'eyeColor', 'ethnicity', 'ageSlider'];
+            appearanceIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.disabled = isRef;
+                    el.style.opacity = isRef ? '0.4' : '1';
+                }
+            });
+
+            // Cambiar texto del botón
+            const btn = document.getElementById('generateBtn');
+            if (btn) {
+                btn.textContent = isRef ? '🖼️ Generar con referencia' : '🎨 Generar Prompt';
+            }
+        }
+
         // === TAB SWITCHING ===
         function switchTab(tabName) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -1269,6 +1301,7 @@
                 warningEl.classList.remove('visible');
             }
 
+            toggleReferenceMode();
             // Suggestions
             const suggestions = generator.getSuggestions(style);
             const sugPanel = document.getElementById('suggestionsPanel');
@@ -1292,6 +1325,7 @@
                 wet: document.getElementById('wet').checked,
                 compact: document.getElementById('compactMode').checked,
                 emphasis: document.getElementById('emphasisMode').checked,
+                reference_mode: document.getElementById('referenceMode').checked,
                 custom_options: {
                     facial_expression: document.getElementById('facialExpression').value,
                     camera_angle: document.getElementById('cameraAngle').value,
@@ -1315,7 +1349,9 @@
             const prompts = [];
             for (let i = 0; i < count; i++) {
                 let result;
-                if (emphasis) {
+                if (opts.reference_mode) {
+                    result = generator.generateReferencePrompt(opts);
+                } else if (emphasis) {
                     result = generator.generateWithEmphasis(opts);
                 } else if (compact) {
                     result = generator.generateCompactPrompt(opts);

@@ -1474,6 +1474,153 @@ class PromptGenerator {
     }
 
     // ==========================================
+    // GENERATE REFERENCE PROMPT (usa imagen existente, no describe la mujer)
+    // ==========================================
+    generateReferencePrompt(options = {}) {
+        const {
+            clothed = true,
+            wet = false,
+            custom_options = {},
+            randomize = true,
+            explicitness_level = 0,
+            person_style = 'normal',
+        } = options;
+
+        // En modo referencia NO describimos a la mujer - se usa la imagen como base
+        // Solo generamos: pose, ropa, lugar, iluminación, etc.
+        const prompt_parts = [];
+
+        // Indicar que se mantiene la misma persona de la imagen
+        prompt_parts.push("same woman from reference image");
+
+        if (wet) {
+            prompt_parts.push("wet, water droplets on skin");
+        }
+
+        // 1. Photo type
+        prompt_parts.push(this._smartChoice(this.photo_types, 'photo_types'));
+
+        // 2. Lighting
+        prompt_parts.push(this._smartChoice(this.lighting, 'lighting'));
+
+        if (!clothed) {
+            // 3. Body modifiers
+            prompt_parts.push(this._smartChoice(this.body_modifiers_nude, 'body_modifiers_nude'));
+
+            // 4. Pose
+            if (explicitness_level >= 5) {
+                prompt_parts.push(this._smartChoice(this.poses_level5, 'poses_level5'));
+            } else if (explicitness_level >= 4) {
+                prompt_parts.push(this._smartChoice(this.poses_level4, 'poses_level4'));
+            } else {
+                prompt_parts.push(this._smartChoice(this.poses_nude, 'poses_nude'));
+            }
+        } else {
+            // 3. Clothing
+            if (explicitness_level >= 3) {
+                prompt_parts.push(this._smartChoice(this.clothing_level3, 'clothing_level3'));
+            } else if (explicitness_level >= 2) {
+                prompt_parts.push(this._smartChoice(this.clothing_level2, 'clothing_level2'));
+            } else if (explicitness_level >= 1) {
+                prompt_parts.push(this._smartChoice(this.clothing_level1, 'clothing_level1'));
+            } else {
+                prompt_parts.push(this._smartChoice(this.clothing_full, 'clothing_full'));
+            }
+
+            // 4. Pose
+            if (randomize && this._randomFloat() > 0.4) {
+                const soft_poses = ["confident pose", "casual relaxed pose", "playful pose", "flirty pose, hip cocked"];
+                prompt_parts.push(this._randomChoice(soft_poses));
+            }
+        }
+
+        // 5. Facial expression
+        const facial_option = custom_options.facial_expression;
+        if (facial_option && facial_option !== 'random') {
+            const facial_map = {
+                seductive_gaze: 'seductive gaze, knowing half-smile',
+                lustful_eyes: 'lustful eyes, parted lips',
+                playful_smile: 'playful smile, mischievous eyes',
+                biting_lip: 'biting lower lip, intense stare',
+                mouth_open: 'mouth slightly open, breathless',
+                intense_contact: 'intense eye contact, burning gaze',
+                bedroom_eyes: 'bedroom eyes, soft lazy smile',
+            };
+            prompt_parts.push(facial_map[facial_option] || this._smartChoice(this.facial_expressions, 'facial_expressions'));
+        } else if (randomize && this._randomFloat() > 0.3) {
+            prompt_parts.push(this._smartChoice(this.facial_expressions, 'facial_expressions'));
+        }
+
+        // 6. Camera angle
+        const angle_option = custom_options.camera_angle;
+        if (angle_option && angle_option !== 'random') {
+            const angle_map = {
+                eye_level: 'eye level angle',
+                low_angle: 'low angle, looking up',
+                high_angle: 'high angle, looking down',
+                over_shoulder: 'over the shoulder shot',
+                from_behind: 'back view, rear angle',
+                side_profile: 'side profile view',
+                close_up: 'close-up shot',
+                full_body: 'full body shot',
+            };
+            prompt_parts.push(angle_map[angle_option] || '');
+        }
+
+        // 7. Composition (fija)
+        prompt_parts.push(this.technical_composition[0]);
+
+        // 8. Skin quality (fija)
+        prompt_parts.push(this.texture_quality[0]);
+
+        // 9. Resolution (fija)
+        prompt_parts.push(this.overall_quality[0]);
+
+        // 10. Background
+        const location_option = custom_options.location;
+        if (location_option && location_option !== 'random') {
+            const location_map = this._getLocationMap();
+            prompt_parts.push(location_map[location_option] || this._getAppropriateBackground(person_style));
+        } else {
+            prompt_parts.push(this._getAppropriateBackground(person_style));
+        }
+
+        // 11. Clothing specifics (nude mode)
+        if (!clothed) {
+            const clothing_opt = custom_options.clothing;
+            if (clothing_opt && clothing_opt !== 'random' && clothing_opt !== 'none_nude' && this.clothing[clothing_opt]) {
+                prompt_parts.push(this.clothing[clothing_opt]);
+            } else {
+                prompt_parts.push("wearing only tiny thong underwear, minimal coverage");
+            }
+        }
+
+        // 12. Color tones
+        prompt_parts.push(this._smartChoice(this.color_tones, 'color_tones'));
+
+        // 13. Style
+        prompt_parts.push(this._smartChoice(this.final_touches, 'final_touches'));
+
+        const positive_prompt = prompt_parts.filter(p => p).join(", ");
+        const negative_prompt = this._buildNegativePrompt(explicitness_level, custom_options, person_style) + ", different person, changed face, changed identity, different woman";
+
+        return {
+            model: this.config.model,
+            positive_prompt,
+            negative_prompt,
+            steps: this.config.steps,
+            cfg: this.config.cfg,
+            sampler: this.config.sampler,
+            scheduler: this.config.scheduler,
+            width: this.config.width,
+            height: this.config.height,
+            seed: this.config.seed,
+            clip_skip: this.config.clip_skip,
+            is_reference: true,
+        };
+    }
+
+    // ==========================================
     // GENERATE BY LEVEL (orden probado: person → photo → lighting → body → pose → composition → skin → resolution → background → clothing → tones → style)
     // ==========================================
     _generateByLevel(level, custom_options, randomize, person_style = 'normal', breast_size = 'medium', hair_style = 'auto', hair_color = 'auto', eye_color = 'green', ethnicity = 'default', age = 22) {
