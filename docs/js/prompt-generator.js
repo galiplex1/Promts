@@ -82,6 +82,7 @@ class PromptGenerator {
             thick_mane: "thick full mane of hair, voluminous luxurious",
             tousled: "tousled bedhead hair, undone and sexy",
             sleek: "sleek glossy hair, ultra-smooth, mirror shine",
+            wolfcut: "wolfcut hairstyle, layered shaggy look, modern edgy",
         };
 
         // === COLORES DE PELO ===
@@ -114,7 +115,7 @@ class PromptGenerator {
                 colors: ['brunette', 'light_brown', 'dark_blonde', 'chestnut', 'auburn']
             },
             alternativa: {
-                styles: ['pixie', 'messy_bun', 'tousled', 'short_bob', 'long_curls', 'curtains'],
+                styles: ['pixie', 'messy_bun', 'tousled', 'short_bob', 'long_curls', 'curtains', 'wolfcut'],
                 colors: ['red', 'burgundy', 'platinum', 'rose_gold', 'black', 'ombre']
             },
             gotica: {
@@ -126,7 +127,7 @@ class PromptGenerator {
                 colors: ['blonde', 'platinum', 'blonde', 'dark_blonde', 'blonde']
             },
             hipster: {
-                styles: ['messy_bun', 'curtains', 'tousled', 'half_up', 'shoulder', 'long_braids'],
+                styles: ['messy_bun', 'curtains', 'tousled', 'half_up', 'shoulder', 'long_braids', 'wolfcut'],
                 colors: ['auburn', 'rose_gold', 'balayage', 'ash_brown', 'strawberry_blonde', 'ombre']
             }
         };
@@ -1246,6 +1247,7 @@ class PromptGenerator {
             thick_mane: "thick hair",
             tousled: "tousled hair",
             sleek: "sleek hair",
+            wolfcut: "wolfcut hairstyle",
         };
         const hairColorShort = {
             blonde: "blonde",
